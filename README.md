@@ -1,14 +1,10 @@
 <div align="center">
 
-```
-  ____  ___ _____ _____ ____   ___   _    ____  ____  
- |  _ \|_ _|__  /__  /| __ ) / _ \ / \  |  _ \|  _ \ 
- | |_) || |  / /   / / |  _ \| | | / _ \ | |_) | | | |
- |  _ < | | / /_  / /_ | |_) | |_| / ___ \|  _ <| |_| |
- |_| \_\___/____|/____|____/ \___/_/   \_\_| \_\____/ 
-```
+<img src="./assets/brand/rizzboard-stamp.jpg" alt="RizzBoard Logo by Danger.Labs" width="220" style="border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);" />
 
-**Ultra-Lightweight, Sub-Millisecond AI Input Method & Contextual Texting Engine for Android**
+# RizzBoard
+
+**Enterprise-Grade, Sub-Millisecond AI Input Method & Contextual Texting Engine for Android**
 
 [![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen?style=flat-square)](#)
 [![Platform](https://img.shields.io/badge/Platform-Android%208.0%2B%20(API%2026--35)-blue?style=flat-square)](#)
@@ -24,7 +20,7 @@
 
 ## Executive Summary
 
-**RizzBoard** is an enterprise-grade, zero-latency Android Input Method Service (IME) designed for real-time conversational intelligence, contextual next-move synthesis, and high-velocity texting. 
+**RizzBoard** is a zero-latency Android Input Method Service (IME) designed for real-time conversational intelligence, contextual next-move synthesis, and high-velocity texting. 
 
 Conventional mobile keyboards suffer from memory bloat (70 MB to 120 MB RAM overhead) and noticeable garbage-collection latency spikes during high-frequency typing. RizzBoard resolves this by pairing a lightweight native Android IME host with **Zuari (`@zuari/*`)**, an ultra-minimalist, Virtual-DOM-free reactive engine powered by W3C DOM Parts and fine-grained TC39 Signals.
 
@@ -32,7 +28,7 @@ The result is a responsive keyboard engine operating at **under 25 MB RAM**, col
 
 ---
 
-## Architectural Highlights
+## Architectural Pipeline
 
 ```
 +-----------------------------------------------------------------------------------+
@@ -83,10 +79,19 @@ The result is a responsive keyboard engine operating at **under 25 MB RAM**, col
 
 ---
 
+## Brand Assets
+
+Brand assets are located in [`assets/brand/`](file:///c:/Users/disha/Documents/CODES/studio/rizzboard/assets/brand):
+- [`assets/brand/rizzboard-stamp.jpg`](file:///c:/Users/disha/Documents/CODES/studio/rizzboard/assets/brand/rizzboard-stamp.jpg) (Official high-resolution postal stamp artwork)
+- [`assets/brand/rizzboard-logo.svg`](file:///c:/Users/disha/Documents/CODES/studio/rizzboard/assets/brand/rizzboard-logo.svg) (Lossless vector rendering of the RizzBoard mascot and mechanical keyboard)
+
+---
+
 ## Directory Structure
 
 ```
 rizzboard/
+├── assets/brand/                     # Master brand vectors and high-res art assets
 ├── docs/                             # Engineering documentation & formal specifications
 │   ├── architecture/                 # System diagrams, component boundaries, data pipelines
 │   ├── setup/                        # SDK dependencies, JDK toolchains, environmental configs
