@@ -1,0 +1,19 @@
+# Node & build outputs
+node_modules/
+dist/
+.vite/
+pnpm-lock.yaml
+
+# Gradle & Android build artifacts
+.gradle/
+build/
+*/build/
+*.apk
+*.aab
+
+# Local configuration & IDE
+.idea/
+*.iml
+local.properties
+.DS_Store
+Thumbs.db
