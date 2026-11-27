@@ -7,8 +7,13 @@ pnpm-lock.yaml
 
 # Gradle, Keystores & Android build artifacts
 .gradle/
-build/
-*/build/
+/build/
+android/build/
+android/app/build/
+core/build/
+ui/build/
+web/build/
+extension/build/
 *.apk
 *.aab
 *.jks
