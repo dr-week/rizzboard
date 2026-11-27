@@ -151,3 +151,9 @@ Detailed engineering guides are maintained in [`docs/README.md`](./docs/README.m
 ## License
 
 Copyright &copy; 2026 Danger.Labs. Distributed under the Apache License, Version 2.0.
+
+## 🌐 Live Site & Downloads
+
+- **Website:** https://dr-week.github.io/rizzboard/
+- **Latest release (APK + extension):** https://github.com/dr-week/rizzboard/releases/tag/v1.1.0
+- **Direct APK:** https://dr-week.github.io/rizzboard/downloads/rizzboard-v1.1.0-release.apk
