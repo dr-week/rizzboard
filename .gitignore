@@ -1,15 +1,22 @@
 # Node & build outputs
 node_modules/
 dist/
+*/dist/
 .vite/
 pnpm-lock.yaml
 
-# Gradle & Android build artifacts
+# Gradle, Keystores & Android build artifacts
 .gradle/
 build/
 */build/
 *.apk
 *.aab
+*.jks
+*.keystore
+android/keystore/
+
+# Packaged release binaries (generated via pnpm build:all)
+releases/
 
 # Local configuration & IDE
 .idea/

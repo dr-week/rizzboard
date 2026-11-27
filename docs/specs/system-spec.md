@@ -1,25 +1,34 @@
 # RizzBoard Technical Specification
 
 ## 1. System Overview
-RizzBoard is a production-grade, zero-latency Android Input Method Service (IME) powered by the **Zuari (`@zuari/*`) reactive framework**, local on-device OCR, and a dual-tier AI conversational engine (On-Device MediaPipe/Gemma + Cloud Gemini 2.0 Flash).
+RizzBoard is a production-grade, zero-latency Android Input Method Service (IME) powered by the **Zuari (`@zuari/*`) reactive framework**, a **5-Tier Hybrid Context Ingestion System** (working across standard, `FLAG_SECURE`, and screenshot-notifying apps), local on-device ML Kit OCR, and a dual-tier AI conversational engine.
 
 ## 2. Hard Requirements & Latency Budget
 - **Keypress to character insertion:** < 16ms (60 FPS minimum threshold).
-- **Recent screenshot detection:** < 100ms from disk write event via `MediaStore.Images.Media.EXTERNAL_CONTENT_URI`.
-- **On-Device OCR & Bubble Extraction:** < 80ms using Google ML Kit Text Recognition v2.
-- **Offline banter & wordplay lookup:** < 5ms via in-memory indexed Trie/Vector vault.
-- **Online multimodal next-move generation:** < 500ms time-to-first-token using Server-Sent Events (SSE).
+- **Recent screenshot detection:** < 100ms from finalized Scoped Storage write (`IS_PENDING == 0`).
+- **Stealth notification & clipboard context surfacing:** < 10ms from `onStartInputView()` via ephemeral `ContextMemoryStore`.
+- **On-Demand Accessibility bubble scan:** < 15ms coordinate extraction directly into `segmentChatBubbles()`.
+- **On-Device OCR & Bubble Extraction:** < 80ms–250ms using Google ML Kit Text Recognition v2.
+- **Offline banter & wordplay lookup:** < 5ms via in-memory indexed vault & heuristic vibe synthesizer.
 
 ## 3. Communication Protocol (Android IME <-> Zuari WebView)
 - **Android -> Zuari (Native to JS):**
   - Android calls `window.__zuariKotlinDispatcher(eventName, payloadJson)`.
-  - Used for: `screenshotDetected`, `appContextChanged`, `themeChanged`, `batteryState`.
+  - Events:
+    - `screenshotDetected`: `{ uri, timestamp, appPackage? }`
+    - `contextDetected`: `{ source: "notification" | "clipboard", text, senderName?, appPackage?, timestamp }`
+    - `clipboardAdded`: `{ text }`
+    - `appContextChanged`: `{ packageName }`
 - **Zuari -> Android (JS to Native):**
   - Uses `window.Android` JavaScriptInterface exposed by `RizzNativeBridge.kt`.
   - Methods:
-    - `commitText(text: String)`: Inserts text at the current cursor via `InputConnection.commitText()`.
+    - `commitText(text: String)`: Inserts text via `InputConnection.commitText()` and records self-commit filter signature.
     - `deleteBackward()`: Sends `KeyEvent.KEYCODE_DEL`.
-    - `sendEnter()`: Sends editor action (`IME_ACTION_SEND` or `IME_ACTION_DONE`).
-    - `triggerHaptic(type: String)`: Triggers system haptic feedback.
-    - `requestScreenshotAnalysis(uri: String)`: Triggers ML Kit OCR and returns text blocks.
+    - `sendEnter()`: Sends editor action (`IME_ACTION_SEND` or `KeyEvent.KEYCODE_ENTER`).
+    - `triggerHaptic(type: String)`: Triggers system haptic feedback (`light`, `click`, `heavy`).
+    - `requestScreenshotAnalysis(uri: String)`: Runs ML Kit OCR v2 and returns `{ status, blocks, appPackage }`.
+    - `requestScreenScan()`: Runs on-demand `RizzAccessibilityService` scan returning `{ status: "ok" | "restricted" | "not_enabled", blocks }`.
+    - `getActiveContext()`: Fetches buffered notification/clipboard context for the focused package.
+    - `getCapabilitiesStatus()`: Returns `{ mediaPermission, notificationAccess, accessibilityEnabled }`.
+    - `openSystemSetting(target: String)`: Deep-links to `notifications`, `accessibility`, or `SettingsActivity`.
     - `hideKeyboard()`: Calls `requestHideSelf(0)`.

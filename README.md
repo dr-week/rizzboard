@@ -2,195 +2,152 @@
 
 <img src="./assets/brand/rizzboard-stamp.jpg" alt="RizzBoard Logo by Danger.Labs" width="220" style="border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);" />
 
-# RizzBoard
+# RizzBoard v1.1.0
 
-**Enterprise-Grade, Sub-Millisecond AI Input Method & Contextual Texting Engine for Android**
+**Enterprise-Grade, Sub-Millisecond AI Android Keyboard, 5-Tier Hybrid Context Engine & Manifest V3 Web Chat Extension**
 
 [![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen?style=flat-square)](#)
-[![Platform](https://img.shields.io/badge/Platform-Android%208.0%2B%20(API%2026--35)-blue?style=flat-square)](#)
-[![Runtime](https://img.shields.io/badge/Runtime-Zuari%20Signals%20%7C%20No%20Virtual--DOM-blueviolet?style=flat-square)](#)
-[![Bundle Size](https://img.shields.io/badge/APK%20Size-3.3%20MB-orange?style=flat-square)](#)
+[![Android](https://img.shields.io/badge/Android-8.0%2B%20(API%2026--35)-blue?style=flat-square)](#)
+[![Browser Extension](https://img.shields.io/badge/Extension-Chromium%20Manifest%20V3-crimson?style=flat-square)](#)
+[![Runtime](https://img.shields.io/badge/Runtime-Zuari%20Signals%20%7C%20Zero--VDOM-orange?style=flat-square)](#)
 [![License](https://img.shields.io/badge/License-Apache%202.0-lightgrey?style=flat-square)](#)
 
 *Engineered by **Danger.Labs** (Autonomous Systems & Edge AI Division)*
 
----
-
 </div>
+
+---
 
 ## Executive Summary
 
-**RizzBoard** is a zero-latency Android Input Method Service (IME) designed for real-time conversational intelligence, contextual next-move synthesis, and high-velocity texting. 
+**RizzBoard** is a multi-platform conversational intelligence suite engineered around a sub-4ms Android Input Method Service (IME) and a companion Chromium Manifest V3 Web Chat Extension.
 
-Conventional mobile keyboards suffer from memory bloat (70 MB to 120 MB RAM overhead) and noticeable garbage-collection latency spikes during high-frequency typing. RizzBoard resolves this by pairing a lightweight native Android IME host with **Zuari (`@zuari/*`)**, an ultra-minimalist, Virtual-DOM-free reactive engine powered by W3C DOM Parts and fine-grained TC39 Signals.
-
-The result is a responsive keyboard engine operating at **under 25 MB RAM**, cold-starting in **under 20 milliseconds**, and delivering instant on-device text prediction alongside multimodal conversation-flow analysis.
+Conventional AI keyboards fail on privacy-hardened or ephemeral messaging surfaces (`WindowManager.LayoutParams.FLAG_SECURE` on Telegram Secret Chats, Signal, and Hinge private modes, or screenshot-notifying chats like Snapchat and Instagram Vanish Mode). RizzBoard solves this via a **5-Tier Hybrid Context Ingestion System**, pairing native Android system observers with **Zuari (`@zuari/*`)**, a Virtual-DOM-free reactive UI runtime powered by TC39 Signals.
 
 ---
 
-## Architectural Pipeline
+## 5-Tier Hybrid Context Pipeline (`FLAG_SECURE` & Snapchat Ready)
 
-```
-+-----------------------------------------------------------------------------------+
-|                                ANDROID HOST LAYER                                 |
-|                                                                                   |
-|  [ InputMethodService ]         [ MediaStore Observer ]     [ Clipboard Manager ] |
-|  - Key Event Dispatch           - Screenshot hook (<100ms)  - History retention   |
-|  - Text insertion / deletion    - Direct URI emission       - Memory ring-buffer  |
-+-----------------------------------------------------------------------------------+
-                                         │
-                         Bidirectional Native FFI Bridge
-                         (window.Android / Kotlin FFI)
-                                         │
-+-----------------------------------------------------------------------------------+
-|                         ZUARI ZERO-VDOM REACTIVE RUNTIME                          |
-|                                                                                   |
-|  [ ActionRibbon ]       [ SuggestionStrip ]      [ QwertyGrid ]   [ Modals ]      |
-|  Contextual triggers    Next-word Bi-gram        Low-latency      Emoji / Clip /  |
-|  & Screenshot alerts    Markov completions       haptics          Roast Engine    |
-+-----------------------------------------------------------------------------------+
-                                         │
-+-----------------------------------------------------------------------------------+
-|                             INTELLIGENCE PIPELINE                                 |
-|                                                                                   |
-|  [ In-Memory Prefix Trie ]  [ Bubble OCR Segmenter ]  [ Dual-Tier AI Router ]     |
-|  - < 0.5ms dictionary check - Bounding box clustering - On-Device Edge Fallback   |
-|  - Bigram next-word model   - Alignment classifier    - Cloud Gemini 2.0 Flash    |
-+-----------------------------------------------------------------------------------+
-```
-
-- **Zero Virtual-DOM Overhead:** Direct character mutations occur via exact text-node target bindings without tree-diffing cycles.
-- **Instant Screenshot Ingestion:** Sub-100ms `MediaStore` content-observer trigger detects conversation captures and surfaces action suggestions without app-switching.
-- **Edge Predictive Model:** In-memory Prefix Trie and Bi-gram Markov predictor operating with sub-millisecond execution times.
-- **Draft Evaluation Engine:** Heuristic message-scoring algorithm assessing ghosting risk and engagement level, offering immediate 1-tap single-phrase upgrades.
-- **Universal Adaptive Binary:** Architecture-neutral byte-code and vectorized layout adapting across ARM64, ARMv7, x86_64, tablets, and foldable displays in a single universal APK.
-
----
-
-## Performance Benchmarks
-
-| Metric | Google Gboard | Microsoft SwiftKey | Danger.Labs RizzBoard |
+| Tier | Capture Module | Mechanism | Target Apps |
 | :--- | :--- | :--- | :--- |
-| **Installed Package Size** | ~75 MB – 110 MB | ~65 MB – 95 MB | **3.3 MB** |
-| **Background RAM Footprint** | ~85 MB – 140 MB | ~70 MB – 125 MB | **~22 MB** |
-| **Typing Latency** | 16 ms – 32 ms | 18 ms – 35 ms | **< 4 ms** |
-| **Web Runtime Footprint** | N/A (Native C++/Java) | N/A (Native C++/Java) | **18 KB (6.2 KB gzip)** |
-| **Contextual Analysis** | None | Generic Copilot Web | **Instant Chat-Bubble OCR** |
+| **01** | `ScreenshotObserver` | Android 10–15 Scoped Storage (`RELATIVE_PATH` + `IS_PENDING == 0`) + ML Kit OCR v2 | Standard Chat Apps |
+| **02** | `RizzNotificationListener` | Ephemeral RAM-only `MessagingStyle` ring buffer (`30-min TTL`, zero disk writes) | Snapchat, Signal, Telegram, Hinge |
+| **03** | `ClipboardVault` | Self-commit-filtered focus hook ignoring URLs, 2FA OTPs & own replies | Copy-Enabled Chats |
+| **04** | `RizzAccessibilityService` | Strictly on-demand (`👁️ Scan Screen`) coordinate bubble extractor (zero passive hooks) | Screenshot-Restricted Views |
+| **05** | `StealthContextBar` | Isolates `QwertyGrid` keystrokes inside the IME without touching the host chat box | Snaps, Voice Notes & Photo Prompts |
 
 ---
 
-## Brand Assets
-
-Brand assets are located in [`assets/brand/`](file:///c:/Users/disha/Documents/CODES/studio/rizzboard/assets/brand):
-- [`assets/brand/rizzboard-stamp.jpg`](file:///c:/Users/disha/Documents/CODES/studio/rizzboard/assets/brand/rizzboard-stamp.jpg) (Official high-resolution postal stamp artwork)
-- [`assets/brand/rizzboard-logo.svg`](file:///c:/Users/disha/Documents/CODES/studio/rizzboard/assets/brand/rizzboard-logo.svg) (Lossless vector rendering of the RizzBoard mascot and mechanical keyboard)
-
----
-
-## Directory Structure
+## Seven-Department Micro-Modular Architecture
 
 ```
 rizzboard/
-├── assets/brand/                     # Master brand vectors and high-res art assets
-├── docs/                             # Engineering documentation & formal specifications
-│   ├── architecture/                 # System diagrams, component boundaries, data pipelines
-│   ├── setup/                        # SDK dependencies, JDK toolchains, environmental configs
-│   └── specs/                        # Latency budgets, API protocols, interface definitions
-├── core/                             # Platform-agnostic computation & algorithms
-│   ├── engine/
-│   │   ├── predictive.ts             # In-memory Prefix Trie & Bigram Markov predictor
-│   │   ├── roast-engine.ts           # Heuristic message-scoring & draft upgrade model
-│   │   └── rizz-engine.ts            # Orchestration runtime & vibe synthesizers
-│   ├── ocr/
-│   │   └── bubble-segmentation.ts    # Screen coordinate parsing & chat bubble classification
-│   ├── vault/
-│   │   ├── curated-lines.ts          # Zero-latency indexed conversation starters
-│   │   └── emoji-data.ts             # Unicode 15.1 categorized emoji datasets
-│   └── test-runner.ts                # Continuous integration unit-test suite
-├── android/                          # Native Android InputMethodService
-│   ├── app/src/main/
-│   │   ├── java/com/rizzboard/
-│   │   │   ├── bridge/               # Bidirectional Native <-> JavaScript bridge
-│   │   │   ├── keyboard/             # InputMethodService lifecycle & text commit engine
-│   │   │   └── service/              # MediaStore ScreenshotObserver & ClipboardVault
-│   │   ├── res/                      # Android IME metadata, XML schemas, localized strings
-│   │   └── AndroidManifest.xml       # Permissions & service declarations
-│   └── build.gradle.kts              # Gradle build automation
-└── ui/                               # Reactive user interface (Zuari Framework)
-    ├── src/
-    │   ├── components/               # Modular presentation primitives (Ribbon, Strip, Grid, Panels)
-    │   ├── services/                 # Native IPC bridge invocation services
-    │   └── styles/                   # Hardware-accelerated design tokens & style definitions
-    └── vite.config.ts                # Build bundling configuration
+├── package.json                        # Root monorepo scripts (test, build:*, verify, serve:web, release:*)
+├── core/                               # [DEPT 01] Platform-Agnostic Intelligence Core
+│   ├── index.ts                        # Shared barrel consumed by IME UI, Extension & Web Simulator
+│   ├── ai/prompts.ts                   # Persona prompt builders & RizzResponse schema
+│   ├── context/                        # Micro-modular Hybrid Context Engine (types, app-registry, noise-filter, router)
+│   ├── engine/                         # Prefix Trie + Bigram Markov, RizzEngine & RoastEngine
+│   ├── ocr/bubble-segmentation.ts      # Screen coordinate clustering & sender alignment
+│   ├── vault/                          # Curated offline lines & Unicode 15.1 emoji datasets
+│   └── tests/run-all.ts                # Automated unit & regression test suite
+│
+├── android/                            # [DEPT 02] Native Android IME & Signed Release APK
+│   └── app/src/main/java/com/rizzboard/
+│       ├── bridge/RizzNativeBridge.kt  # Bidirectional window.Android FFI
+│       ├── keyboard/RizzInputMethodService.kt
+│       ├── service/
+│       │   ├── store/ContextMemoryStore.kt
+│       │   ├── screenshot/ScreenshotObserver.kt
+│       │   ├── notification/RizzNotificationListener.kt
+│       │   ├── clipboard/ClipboardVault.kt
+│       │   └── accessibility/RizzAccessibilityService.kt
+│       └── settings/SettingsActivity.kt # Onboarding, runtime permissions & Prominent Disclosure
+│
+├── ui/                                 # [DEPT 03] Zuari Zero-VDOM Reactive Keyboard UI
+│   └── src/
+│       ├── components/{ribbon,grid,panels}/
+│       ├── services/{bridge-service,dom-helper}.ts
+│       ├── styles/{tokens,ribbon,grid,panels,keyboard}.css
+│       └── vendor/zuari/               # Standalone Zuari CI fallback runtime
+│
+├── extension/                          # [DEPT 04] Manifest V3 Web Chat Extension (Chrome/Brave/Edge/Arc)
+│   ├── manifest.json
+│   └── src/
+│       ├── background/service-worker.ts
+│       ├── content/{adapters,extractor,injector,widget}/
+│       └── popup/{popup.html,popup.css,popup.ts}
+│
+├── web/                                # [DEPT 05] Product Showcase, Live Simulator & APK Download Portal
+│   ├── index.html
+│   ├── styles/{tokens,base,hero,simulator,sections}.css
+│   └── src/{simulator,downloads,main}.ts
+│
+├── scripts/                            # [DEPT 06] DevOps, Build, Verification & Release Automations
+│   ├── lib/logger.mjs
+│   ├── build/{generate-icons,build-ui,build-extension,build-apk,build-web}.mjs
+│   ├── verify/verify-all.mjs
+│   ├── release/cut-release.mjs
+│   └── serve-web.mjs
+│
+├── .github/workflows/                  # Automated CI, Tagged GitHub Releases & GitHub Pages Deployment
+│   ├── ci.yml
+│   ├── release.yml
+│   └── deploy-pages.yml
+│
+└── docs/                               # [DEPT 07] Engineering Manuals & System Specifications
+    ├── README.md
+    ├── departments/01..06-*.md
+    ├── architecture/system-architecture.md
+    ├── setup/prerequisites.md
+    └── specs/system-spec.md
 ```
 
 ---
 
-## Build & Deployment
+## Quickstart & Build Automations
 
-### Prerequisites
-- **JDK:** Version 21 (Temurin / OpenJDK)
-- **Android SDK:** Platform API 35 (Android 15), Build-Tools 34.0.0+
-- **Node.js Environment:** Node.js v20+ with `pnpm` (v10+)
+### 1. Full Monorepo Verification & Release Build (1 Command)
+Runs the Core test suite, compiles the Zuari IME UI, bundles & zips the Manifest V3 Browser Extension, builds the R8-shrunk V1/V2/V3 Signed Release APK, and assembles the Web Download Portal with `SHA256SUMS.txt`:
 
-### 1. Build the Reactive UI Distribution
 ```bash
-cd ui
-pnpm install
-pnpm build
+pnpm verify
 ```
 
-### 2. Assemble Universal APK
+Generated release artifacts are output to `releases/v1.1.0/`:
+- `releases/v1.1.0/rizzboard-v1.1.0-release.apk` — Universal Signed Android Release APK
+- `releases/v1.1.0/rizzboard-extension-v1.1.0.zip` — Chromium Manifest V3 Web Extension
+- `releases/v1.1.0/SHA256SUMS.txt` — Cryptographic `SHA-256` checksums
+
+### 2. Department-Specific Commands
 ```bash
-cd ../android
-./gradlew assembleDebug
-```
-The compiled package will be located at:
-```
-android/app/build/outputs/apk/debug/app-debug.apk
+pnpm test              # Dept 01: Run Core Engine unit tests
+pnpm build:ui          # Dept 03: Build Zuari UI & sync into Android assets
+pnpm build:extension   # Dept 04: Bundle MV3 Web Extension & .zip archive
+pnpm build:apk         # Dept 02: Build R8-optimized Signed Release APK
+pnpm build:web         # Dept 05: Assemble Web Showcase & Download Portal
+pnpm serve:web         # Dept 05: Launch local portal at http://localhost:4173
+pnpm release:github    # Dept 06: Publish GitHub Release via gh CLI
 ```
 
-### 3. Deploy via ADB
-```bash
-adb install -r android/app/build/outputs/apk/debug/app-debug.apk
-```
+### 3. Install on Android & Chromium Browsers
+- **Android APK:** Install `releases/v1.1.0/rizzboard-v1.1.0-release.apk` directly on device or via `adb install -r releases/v1.1.0/rizzboard-v1.1.0-release.apk`, then open **RizzBoard** to enable the keyboard and Stealth Notification Listener.
+- **Browser Extension:** Unzip `releases/v1.1.0/rizzboard-extension-v1.1.0.zip` (or use `extension/dist/`), open `chrome://extensions`, enable **Developer mode**, and click **Load unpacked**. Press `Alt+R` inside WhatsApp Web, Instagram Direct, Telegram Web, Tinder, Bumble, or Discord.
 
 ---
 
-## Current Technical Limitations & Known Issues
+## Documentation Index
 
-1. **FLAG_SECURE Applications:** Screen-reading capabilities are restricted on view surfaces protected by Android `WindowManager.LayoutParams.FLAG_SECURE` (e.g. banking interfaces, ephemeral chat views).
-2. **Gesture & Glide Typing Engine:** Continuous touch-path trajectory calculation (swipe typing) is currently under active development and not enabled in the default build profile.
-3. **Android 14+ Screenshot Access Granularity:** When `READ_MEDIA_IMAGES` permissions are partially granted, screenshot notifications may experience an intermittent delay depending on OEM power-management policies.
-4. **Rich Content Protocol (GIFs):** Insertion of animated WebP/GIF binaries via `InputConnection.commitContent()` requires client applications to implement the Android Rich Content API.
-
----
-
-## Contributing
-
-We welcome contributions from systems architects, compiler specialists, and Android platform engineers.
-
-1. Fork the repository.
-2. Create a dedicated topic branch (`git checkout -b feature/prefix-cache-optimization`).
-3. Ensure all unit and regression tests pass cleanly:
-   ```bash
-   npx tsx core/test-runner.ts
-   ```
-4. Commit your modifications following the Conventional Commits specification.
-5. Submit a detailed Pull Request outlining latency impacts and architectural considerations.
-
----
-
-## Leadership & Design
-
-- **Architecture & System Design:** **Danger.Labs**
-- **Lead Maintainer:** Danger.Labs Core Engineering Group
-- **Reactive Engine:** Powered by the **Zuari (`@zuari/*`) Framework**
+Detailed engineering guides are maintained in [`docs/README.md`](./docs/README.md):
+- [Dept 01 · Core Intelligence Engine](./docs/departments/01-core-engine.md)
+- [Dept 02 · Android Native IME & Hybrid Services](./docs/departments/02-android-ime.md)
+- [Dept 03 · Zuari Zero-VDOM Keyboard UI](./docs/departments/03-zuari-ui.md)
+- [Dept 04 · Chromium Manifest V3 Browser Extension](./docs/departments/04-browser-extension.md)
+- [Dept 05 · Showcase Website & Download Portal](./docs/departments/05-web-portal.md)
+- [Dept 06 · DevOps, Build Scripts & CI/CD Automations](./docs/departments/06-devops-automations.md)
 
 ---
 
 ## License
 
-Copyright &copy; 2026 Danger.Labs. All rights reserved.
-
-Distributed under the Apache License, Version 2.0. See [LICENSE](LICENSE) for full details.
+Copyright &copy; 2026 Danger.Labs. Distributed under the Apache License, Version 2.0.

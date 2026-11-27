@@ -1,0 +1,20 @@
+{
+  "name": "rizzboard-monorepo",
+  "version": "1.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Danger.Labs RizzBoard — Sub-Millisecond Android AI Keyboard, 5-Tier Hybrid Context Engine, Manifest V3 Browser Extension & Web Download Portal",
+  "scripts": {
+    "test": "node --experimental-strip-types core/tests/run-all.ts",
+    "test:core": "node --experimental-strip-types core/tests/run-all.ts",
+    "build:ui": "node scripts/build/build-ui.mjs",
+    "build:extension": "node scripts/build/build-extension.mjs",
+    "build:apk": "node scripts/build/build-apk.mjs",
+    "build:web": "node scripts/build/build-web.mjs",
+    "build:all": "node scripts/verify/verify-all.mjs",
+    "verify": "node scripts/verify/verify-all.mjs",
+    "serve:web": "node scripts/serve-web.mjs",
+    "release:dry-run": "node scripts/release/cut-release.mjs --dry-run",
+    "release:github": "node scripts/release/cut-release.mjs"
+  }
+}

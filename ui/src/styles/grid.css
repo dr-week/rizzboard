@@ -1,0 +1,85 @@
+.suggestions-shell {
+  display: contents;
+}
+
+.suggestions-panel {
+  display: flex;
+  gap: 8px;
+  padding: 8px 10px;
+  background: var(--bg-keyboard);
+  min-height: 48px;
+  overflow-x: auto;
+}
+
+.suggestion-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-surface);
+  padding: 6px 16px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  cursor: pointer;
+}
+
+.suggestion-card:active {
+  background: var(--bg-key-active);
+  border-color: var(--primary);
+}
+
+.suggestion-text {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-main);
+}
+
+.keyboard-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 6px;
+  margin-top: auto;
+}
+
+.keyboard-row {
+  display: flex;
+  gap: 5px;
+  justify-content: center;
+}
+
+.key-btn {
+  background: var(--bg-key);
+  color: var(--text-main);
+  border: none;
+  border-radius: 6px;
+  height: 44px;
+  flex: 1;
+  max-width: 36px;
+  font-size: 16px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.key-btn:active {
+  background: var(--bg-key-active);
+}
+
+.key-btn.special {
+  max-width: 48px;
+  background: var(--bg-surface);
+  font-size: 14px;
+}
+
+.key-btn.space {
+  max-width: 160px;
+}
+
+.key-btn.send {
+  max-width: 60px;
+  background: var(--primary);
+  color: white;
+}

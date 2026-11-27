@@ -1,0 +1,255 @@
+.sim-wrapper {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-panel);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.sim-scenario-bar {
+  display: flex;
+  gap: 6px;
+  padding: 10px 12px;
+  background: #131317;
+  border-bottom: 1px solid var(--border-subtle);
+  overflow-x: auto;
+}
+
+.scenario-tab {
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 7px;
+  padding: 6px 11px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.scenario-tab.active {
+  background: var(--bg-keycap);
+  color: var(--text-primary);
+  border-color: var(--accent-crimson);
+}
+
+/* Simulated Chat Thread */
+.sim-chat-screen {
+  padding: 14px 16px;
+  background: #141418;
+  min-height: 175px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sim-app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.sim-contact {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.sim-security-tag {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  padding: 2px 7px;
+  border-radius: 5px;
+  background: rgba(229, 155, 55, 0.15);
+  color: var(--accent-amber);
+}
+
+.sim-messages {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.chat-bubble {
+  max-width: 82%;
+  padding: 8px 12px;
+  border-radius: 12px;
+  font-size: 13.5px;
+  line-height: 1.4;
+}
+
+.chat-bubble.partner {
+  align-self: flex-start;
+  background: var(--bg-keycap);
+  color: var(--text-primary);
+  border-bottom-left-radius: 4px;
+}
+
+.chat-bubble.me {
+  align-self: flex-end;
+  background: var(--accent-crimson);
+  color: #ffffff;
+  border-bottom-right-radius: 4px;
+}
+
+.sim-composer-line {
+  margin-top: 6px;
+  background: #0e0e11;
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  color: var(--text-primary);
+  min-height: 36px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.composer-placeholder {
+  color: var(--text-muted);
+}
+
+/* Interactive IME Surface */
+.sim-ime {
+  background: #111114;
+  border-top: 1px solid var(--border-strong);
+  display: flex;
+  flex-direction: column;
+}
+
+.sim-ribbon {
+  display: flex;
+  gap: 6px;
+  padding: 8px 10px;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-subtle);
+  overflow-x: auto;
+}
+
+.sim-pill {
+  background: var(--bg-keycap);
+  border: 1px solid var(--border-strong);
+  color: var(--text-primary);
+  padding: 5px 10px;
+  border-radius: 14px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.sim-pill.alert {
+  background: rgba(194, 39, 45, 0.24);
+  border-color: var(--accent-coral);
+  color: #ff9eb0;
+}
+
+.sim-pill.active {
+  background: var(--accent-crimson);
+  border-color: var(--accent-crimson);
+  color: #ffffff;
+}
+
+.sim-stealth-box {
+  background: #1c1619;
+  border-bottom: 1px solid var(--accent-crimson);
+  padding: 8px 10px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.sim-stealth-input {
+  flex: 1;
+  background: #101013;
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  padding: 6px 9px;
+  color: var(--text-primary);
+  font-size: 12.5px;
+}
+
+.sim-body {
+  padding: 10px;
+  min-height: 196px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 7px;
+}
+
+.sim-vibe-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  padding: 8px 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  transition: background 0.12s ease, border-color 0.12s ease;
+}
+
+.sim-vibe-card:hover {
+  background: var(--bg-keycap);
+  border-color: var(--accent-coral);
+}
+
+.sim-vibe-badge {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 3px 6px;
+  border-radius: 5px;
+  min-width: 56px;
+  text-align: center;
+}
+
+.sim-vibe-badge.smooth { background: rgba(52, 211, 153, 0.16); color: var(--accent-mint); }
+.sim-vibe-badge.tease { background: rgba(229, 155, 55, 0.18); color: var(--accent-amber); }
+.sim-vibe-badge.bold { background: rgba(255, 75, 114, 0.2); color: #ff8ca3; }
+
+.sim-key-row {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+}
+
+.sim-key {
+  flex: 1;
+  max-width: 34px;
+  height: 36px;
+  background: var(--bg-keycap);
+  color: var(--text-primary);
+  border: 1px solid #33333d;
+  border-bottom-width: 3px;
+  border-radius: 5px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.sim-key:active {
+  transform: translateY(1px);
+}
+
+.sim-key.wide {
+  max-width: 138px;
+  font-size: 12px;
+}
+
+.sim-key.action {
+  max-width: 58px;
+  background: var(--accent-crimson);
+  border-color: #9e1b20;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+}

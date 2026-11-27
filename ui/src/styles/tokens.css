@@ -1,0 +1,44 @@
+:root {
+  --bg-keyboard: #121214;
+  --bg-surface: #1e1e24;
+  --bg-key: #2a2a32;
+  --bg-key-active: #3e3e4a;
+  --primary: #ff4b72;
+  --primary-glow: rgba(255, 75, 114, 0.25);
+  --text-main: #f0f0f5;
+  --text-muted: #8e8e9a;
+  --border: #32323e;
+  --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+body {
+  background: var(--bg-keyboard);
+  color: var(--text-main);
+  font-family: var(--font-family);
+  overflow: hidden;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.rizz-app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.back-link {
+  background: transparent;
+  border: none;
+  color: var(--primary);
+  cursor: pointer;
+  font-size: 12px;
+}

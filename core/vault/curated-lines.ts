@@ -74,27 +74,59 @@ export const OFFLINE_VAULT: CuratedEntry[] = [
     id: 'cl-1',
     category: 'closer',
     vibe: 'bold',
-    triggerKeywords: ['drinks', 'date', 'weekend', 'meet'],
+    triggerKeywords: ['drinks', 'date', 'weekend', 'meet', 'free', 'tonight'],
     template: 'Drinks this Thursday. You pick the spot, I will bring the conversation.'
   },
   {
     id: 'cl-2',
     category: 'closer',
     vibe: 'smooth',
-    triggerKeywords: ['coffee', 'tea', 'afternoon'],
+    triggerKeywords: ['coffee', 'tea', 'afternoon', 'sunday', 'morning'],
     template: 'Let us see if you are as fun in person. Coffee tomorrow?'
+  },
+
+  // Prompts, Red Flags & Ephemeral Chats (Snapchat / Hinge / Secret Chats)
+  {
+    id: 'rf-1',
+    category: 'banter',
+    vibe: 'playful',
+    triggerKeywords: ['red flag', 'toxic', 'flaw', 'worst'],
+    template: 'My biggest red flag is thinking I can win every staring contest.'
+  },
+  {
+    id: 'sn-1',
+    category: 'banter',
+    vibe: 'bold',
+    triggerKeywords: ['snap', 'streak', 'vanish', 'secret', 'disappear'],
+    template: 'Disappearing messages just mean we have to make every line count.'
+  },
+  {
+    id: 'wy-1',
+    category: 'banter',
+    vibe: 'witty',
+    triggerKeywords: ['wyd', 'doing', 'bored', 'up to', 'plans'],
+    template: 'Plotting my next move, and you just walked right into it.'
+  },
+  {
+    id: 'pt-1',
+    category: 'opener',
+    vibe: 'playful',
+    triggerKeywords: ['dog', 'puppy', 'cat', 'pet', 'gym', 'workout'],
+    template: 'Be honest: am I competing with your pet for attention, or do I stand a chance?'
   }
 ];
 
 export function findMatches(input: string, limit = 3): CuratedEntry[] {
   const normalized = input.toLowerCase();
+  if (!normalized.trim()) return [];
+
   const scored = OFFLINE_VAULT.map(entry => {
     let score = 0;
     for (const kw of entry.triggerKeywords) {
       if (normalized.includes(kw)) score += 2;
     }
     return { entry, score };
-  });
+  }).filter(item => item.score > 0);
 
   scored.sort((a, b) => b.score - a.score);
   return scored.slice(0, limit).map(s => s.entry);

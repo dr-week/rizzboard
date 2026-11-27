@@ -3,4 +3,7 @@
     <string name="app_name">RizzBoard</string>
     <string name="ime_name">RizzBoard AI Keyboard</string>
     <string name="subtype_en_us">English (US) - RizzBoard</string>
+    <string name="notif_listener_label">RizzBoard Stealth Chat Context</string>
+    <string name="accessibility_service_label">RizzBoard Live Bubble Scanner</string>
+    <string name="accessibility_service_description">On-demand chat bubble scanner triggered only when you tap Scan Screen inside RizzBoard on apps where screenshots are blocked.</string>
 </resources>

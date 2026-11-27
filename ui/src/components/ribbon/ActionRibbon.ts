@@ -1,0 +1,46 @@
+import { html } from '@zuari/dom';
+import {
+  formatAlertPillText,
+  type ConversationContext
+} from '../../../../core/index.ts';
+import { mountTemplate } from '../../services/dom-helper.ts';
+
+export function ActionRibbon(options: {
+  activeContext: { value: ConversationContext | null };
+  stealthMode: { value: boolean };
+  onOpenContextReplies: () => void;
+  onScanScreen: () => void;
+  onToggleStealth: () => void;
+  onToggleRoast: () => void;
+  onToggleClipboard: () => void;
+  onToggleEmojis: () => void;
+}) {
+  return mountTemplate(html`
+    <div class="action-bar">
+      ${() => options.activeContext.value
+        ? mountTemplate(html`
+            <button class="action-pill highlight" @click=${options.onOpenContextReplies}>
+              ${formatAlertPillText(options.activeContext.value)}
+            </button>
+          `)
+        : ''}
+      <button class="action-pill" @click=${options.onScanScreen}>
+        👁️ Scan Screen
+      </button>
+      <button
+        class=${() => options.stealthMode.value ? 'action-pill active-mode' : 'action-pill'}
+        @click=${options.onToggleStealth}>
+        💬 Tell Rizz
+      </button>
+      <button class="action-pill" @click=${options.onToggleRoast}>
+        🔥 Roast Draft
+      </button>
+      <button class="action-pill" @click=${options.onToggleClipboard}>
+        📋 Clipboard
+      </button>
+      <button class="action-pill" @click=${options.onToggleEmojis}>
+        😏 Emojis
+      </button>
+    </div>
+  `);
+}

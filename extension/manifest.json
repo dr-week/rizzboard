@@ -1,0 +1,57 @@
+{
+  "manifest_version": 3,
+  "name": "RizzBoard — AI Chat Wingman & Reply Engine",
+  "short_name": "RizzBoard",
+  "version": "1.1.0",
+  "description": "Sub-millisecond contextual reply synthesizer, live chat bubble reader, and draft roast engine for WhatsApp Web, Instagram DMs, Telegram, Tinder, Bumble & Discord.",
+  "permissions": [
+    "storage",
+    "contextMenus",
+    "activeTab"
+  ],
+  "icons": {
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
+  "action": {
+    "default_title": "RizzBoard Wingman (Alt+R)",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png",
+      "48": "icons/icon-48.png"
+    }
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "commands": {
+    "toggle-wingman": {
+      "suggested_key": {
+        "default": "Alt+R",
+        "mac": "Alt+R"
+      },
+      "description": "Toggle RizzBoard Wingman HUD on the active chat input"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://web.whatsapp.com/*",
+        "https://*.instagram.com/*",
+        "https://web.telegram.org/*",
+        "https://*.tinder.com/*",
+        "https://*.bumble.com/*",
+        "https://discord.com/*",
+        "https://x.com/*",
+        "https://*.messenger.com/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ]
+}

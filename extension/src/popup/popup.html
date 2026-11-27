@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RizzBoard Wingman</title>
+    <link rel="stylesheet" href="./popup.css" />
+  </head>
+  <body>
+    <div class="popup-shell">
+      <header class="popup-header">
+        <div class="brand-row">
+          <img src="./icons/icon-32.png" alt="RizzBoard" width="22" height="22" class="brand-icon" />
+          <div>
+            <h1>RizzBoard</h1>
+            <span class="sub">Web Wingman · v1.1.0</span>
+          </div>
+        </div>
+        <label class="hud-toggle" title="Show floating ⚡ RizzBoard button on web chat apps">
+          <input type="checkbox" id="hud-enabled-toggle" checked />
+          <span>HUD</span>
+        </label>
+      </header>
+
+      <nav class="tab-nav">
+        <button class="tab-btn active" data-tab="replies" id="tab-btn-replies">⚡ Replies</button>
+        <button class="tab-btn" data-tab="roast" id="tab-btn-roast">🔥 Roast</button>
+        <button class="tab-btn" data-tab="vault" id="tab-btn-vault">🗄️ Vault</button>
+      </nav>
+
+      <!-- Tab 1: Contextual Reply Generator -->
+      <section class="tab-pane active" id="pane-replies">
+        <label class="field-label" for="partner-input">What did they say or ask?</label>
+        <div class="input-group">
+          <input
+            type="text"
+            id="partner-input"
+            placeholder="e.g. What is your biggest red flag?"
+            autocomplete="off"
+          />
+          <button id="generate-replies-btn" class="primary-btn">Go</button>
+        </div>
+        <div id="replies-list" class="card-stack"></div>
+      </section>
+
+      <!-- Tab 2: Roast Draft (Rizz Test) -->
+      <section class="tab-pane" id="pane-roast">
+        <label class="field-label" for="draft-input">Test your draft before sending</label>
+        <div class="input-group">
+          <input
+            type="text"
+            id="draft-input"
+            placeholder="e.g. hey how was your day"
+            autocomplete="off"
+          />
+          <button id="run-roast-btn" class="primary-btn">Score</button>
+        </div>
+        <div id="roast-output" class="card-stack"></div>
+      </section>
+
+      <!-- Tab 3: Offline Curated Vault -->
+      <section class="tab-pane" id="pane-vault">
+        <label class="field-label" for="vault-search">Search openers, banter &amp; closers</label>
+        <input
+          type="text"
+          id="vault-search"
+          class="full-input"
+          placeholder="Filter by coffee, travel, red flag, snap..."
+          autocomplete="off"
+        />
+        <div id="vault-list" class="card-stack scroll-list"></div>
+      </section>
+
+      <footer class="popup-footer">
+        <span id="copy-toast">Click any card to copy · Alt+R in chats</span>
+      </footer>
+    </div>
+    <script src="./popup.js"></script>
+  </body>
+</html>

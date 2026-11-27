@@ -1,24 +1,26 @@
 package com.rizzboard.bridge
 
 import android.content.Context
+import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
-import android.os.Build
 import android.view.KeyEvent
 import android.view.inputmethod.EditorInfo
 import android.webkit.JavascriptInterface
 import com.rizzboard.keyboard.RizzInputMethodService
-import org.json.JSONObject
+import com.rizzboard.service.store.ContextMemoryStore
 
 /**
  * JavaScript interface exposed to the Zuari web runtime via window.Android.
- * Thread-safe execution of keyboard input actions and hardware haptics.
+ * Thread-safe execution of keyboard input actions, hardware haptics, and
+ * 5-tier hybrid context capture (Screenshot OCR, Notification Buffer, Clipboard, Screen Scan).
  */
 class RizzNativeBridge(private val service: RizzInputMethodService) {
 
     private val vibrator: Vibrator? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-        val manager = service.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as? VibratorManager
+        val manager =
+            service.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as? VibratorManager
         manager?.defaultVibrator
     } else {
         @Suppress("DEPRECATION")
@@ -27,6 +29,9 @@ class RizzNativeBridge(private val service: RizzInputMethodService) {
 
     @JavascriptInterface
     fun commitText(text: String) {
+        if (text.trim().length >= 5) {
+            ContextMemoryStore.recordSelfCommit(text)
+        }
         service.mainHandler.post {
             service.currentInputConnection?.commitText(text, 1)
         }
@@ -77,6 +82,26 @@ class RizzNativeBridge(private val service: RizzInputMethodService) {
     @JavascriptInterface
     fun requestScreenshotAnalysis(uri: String): String {
         return service.performOCRAnalysis(uri)
+    }
+
+    @JavascriptInterface
+    fun requestScreenScan(): String {
+        return service.performAccessibilityScan()
+    }
+
+    @JavascriptInterface
+    fun getActiveContext(): String {
+        return service.getActiveBufferedContextJson()
+    }
+
+    @JavascriptInterface
+    fun getCapabilitiesStatus(): String {
+        return service.getCapabilitiesStatusJson()
+    }
+
+    @JavascriptInterface
+    fun openSystemSetting(target: String) {
+        service.launchSystemSetting(target)
     }
 
     @JavascriptInterface

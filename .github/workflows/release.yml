@@ -1,0 +1,44 @@
+name: Release APK & Browser Extension
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build Signed APK & Extension Archive
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: gradle
+
+      - name: Build All Release Artifacts & Checksums
+        run: node scripts/verify/verify-all.mjs
+
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "${GITHUB_REF_NAME}" \
+            releases/v*/rizzboard-*-release.apk \
+            releases/v*/rizzboard-extension-*.zip \
+            releases/v*/SHA256SUMS.txt \
+            --title "RizzBoard ${GITHUB_REF_NAME}" \
+            --generate-notes
