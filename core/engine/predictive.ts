@@ -91,6 +91,29 @@ export class PredictiveEngine {
 
   constructor() {
     this.seedCommonVocabulary();
+    this.loadPersonalDictionary();
+  }
+
+  private loadPersonalDictionary(): void {
+    try {
+      if (typeof localStorage === 'undefined') return;
+      const raw = localStorage.getItem('rizzboard_personal_dict');
+      if (!raw) return;
+      const words = JSON.parse(raw) as string[];
+      if (Array.isArray(words)) {
+        for (const w of words) {
+          this.insert(w, 30);
+          this.personalWords.add(w.toLowerCase());
+        }
+      }
+    } catch {}
+  }
+
+  private savePersonalDictionary(): void {
+    try {
+      if (typeof localStorage === 'undefined') return;
+      localStorage.setItem('rizzboard_personal_dict', JSON.stringify(Array.from(this.personalWords)));
+    } catch {}
   }
 
   public insert(word: string, frequency = 1): void {
@@ -112,6 +135,7 @@ export class PredictiveEngine {
     if (clean.length < 2) return;
     this.insert(clean, 25);
     this.personalWords.add(clean.toLowerCase());
+    this.savePersonalDictionary();
   }
 
   public getPersonalDictionary(): string[] {
@@ -301,10 +325,27 @@ export class PredictiveEngine {
       ['good', 'morning'], ['good', 'night'], ['good', 'idea'],
       ['sounds', 'good'], ['sounds', 'great'], ['sounds', 'fun'],
       ['see', 'you'], ['talk', 'to'], ['let', 'me'],
-      ['on', 'my'], ['my', 'way'], ['this', 'weekend']
+      ['on', 'my'], ['my', 'way'], ['this', 'weekend'],
+      // Roman Konkani common bigrams
+      ['koso', 'asa'], ['kashi', 'asa'], ['borem', 'asa'], ['barem', 'asa'],
+      ['kitem', 'zala'], ['kitem', 'karta'], ['khuim', 'veta'], ['mhaka', 'zai'],
+      ['dev', 'borem'], ['borem', 'korum'], ['mog', 'karta']
     ];
     for (const [a, b] of commonBigrams) {
       this.addBigram(a, b);
+    }
+
+    const konkaniWords: Array<[string, number]> = [
+      ['koso', 95], ['kashi', 95], ['asa', 110], ['asai', 80], ['borem', 95], ['barem', 90],
+      ['dev', 85], ['korum', 80], ['tum', 100], ['tuzo', 85], ['tujem', 85], ['mhaka', 95],
+      ['mhajo', 85], ['amcho', 80], ['kitem', 95], ['khuim', 90], ['kedna', 85], ['kityak', 85],
+      ['vhoi', 90], ['naka', 90], ['zala', 90], ['zale', 85], ['jata', 85], ['yetam', 85],
+      ['vetam', 85], ['karta', 90], ['veta', 85], ['zai', 95], ['mog', 95], ['moga', 90],
+      ['ghar', 85], ['ghara', 85], ['varan', 80], ['bhat', 80], ['xitt', 80], ['kodi', 80],
+      ['nuste', 80], ['khabar', 85], ['kobar', 80], ['ulo', 80], ['polle', 85], ['rav', 85]
+    ];
+    for (const [w, f] of konkaniWords) {
+      this.insert(w, f);
     }
   }
 }
