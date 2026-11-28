@@ -11,7 +11,8 @@ import {
   fetchActiveNativeContext,
   openNativeSetting,
   startVoiceTyping,
-  showInputMethodPicker
+  showInputMethodPicker,
+  moveCursor
 } from './services/bridge-service.ts';
 import {
   PredictiveEngine,
@@ -467,7 +468,11 @@ export function App() {
               sendAction();
             }
           },
-          onOpenEmojis: () => (currentView.value = 'emojis')
+          onOpenEmojis: () => (currentView.value = 'emojis'),
+          onMoveCursor: (delta: number) => {
+            triggerHaptic('light');
+            moveCursor(delta);
+          }
         });
       }}
     </div>

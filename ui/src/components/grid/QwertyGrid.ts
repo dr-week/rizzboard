@@ -5,12 +5,19 @@ import { mountList, mountTemplate } from '../../services/dom-helper.ts';
 type ShiftState = 'off' | 'once' | 'caps';
 type GridLayer = 'alpha' | 'numbers' | 'symbols';
 
+const LONG_PRESS_MAP: Record<string, string> = {
+  q: '1', w: '2', e: '3', r: '4', t: '5', y: '6', u: '7', i: '8', o: '9', p: '0',
+  a: '@', s: '#', d: '$', f: '%', g: '&', h: '-', j: '+', k: '(', l: ')',
+  z: '*', x: '"', c: "'", v: ':', b: ';', n: '!', m: '?'
+};
+
 export function QwertyGrid(options: {
   stealthMode: { value: boolean };
   onKeyPress: (char: string) => void;
   onBackspace: () => void;
   onSend: () => void;
   onOpenEmojis: () => void;
+  onMoveCursor?: (delta: number) => void;
   onVoiceInput?: () => void;
 }) {
   const shiftState = signal<ShiftState>('off');
@@ -47,6 +54,151 @@ export function QwertyGrid(options: {
     }
   };
 
+  const createAlphaKeyBtn = (k: string, isUpper: boolean) => {
+    const label = isUpper ? k.toUpperCase() : k;
+    const alt = LONG_PRESS_MAP[k] ?? '';
+    let lpTimer: ReturnType<typeof setTimeout> | null = null;
+    let didLongPress = false;
+
+    const onPointerDown = () => {
+      didLongPress = false;
+      if (!alt) return;
+      lpTimer = setTimeout(() => {
+        didLongPress = true;
+        options.onKeyPress(alt);
+      }, 380);
+    };
+
+    const onPointerCancel = () => {
+      if (lpTimer) {
+        clearTimeout(lpTimer);
+        lpTimer = null;
+      }
+    };
+
+    const onClick = () => {
+      if (lpTimer) {
+        clearTimeout(lpTimer);
+        lpTimer = null;
+      }
+      if (!didLongPress) {
+        handleAlphaKey(k);
+      }
+      didLongPress = false;
+    };
+
+    return html`
+      <button
+        class="key-btn"
+        @pointerdown=${onPointerDown}
+        @pointerup=${onPointerCancel}
+        @pointerleave=${onPointerCancel}
+        @pointercancel=${onPointerCancel}
+        @click=${onClick}>
+        ${label}
+      </button>
+    `;
+  };
+
+  const createBackspaceBtn = () => {
+    let delayTimer: ReturnType<typeof setTimeout> | null = null;
+    let repeatTimer: ReturnType<typeof setInterval> | null = null;
+    let didRepeat = false;
+
+    const stopRepeat = () => {
+      if (delayTimer) {
+        clearTimeout(delayTimer);
+        delayTimer = null;
+      }
+      if (repeatTimer) {
+        clearInterval(repeatTimer);
+        repeatTimer = null;
+      }
+    };
+
+    const onPointerDown = () => {
+      didRepeat = false;
+      stopRepeat();
+      delayTimer = setTimeout(() => {
+        didRepeat = true;
+        options.onBackspace();
+        repeatTimer = setInterval(() => {
+          options.onBackspace();
+        }, 55);
+      }, 350);
+    };
+
+    const onClick = () => {
+      stopRepeat();
+      if (!didRepeat) {
+        options.onBackspace();
+      }
+      didRepeat = false;
+    };
+
+    return html`
+      <button
+        class="key-btn special"
+        @pointerdown=${onPointerDown}
+        @pointerup=${stopRepeat}
+        @pointerleave=${stopRepeat}
+        @pointercancel=${stopRepeat}
+        @click=${onClick}>
+        ⌫
+      </button>
+    `;
+  };
+
+  const createSpaceBtn = () => {
+    let startX = 0;
+    let lastX = 0;
+    let didScrub = false;
+    let active = false;
+
+    const onPointerDown = (e: PointerEvent) => {
+      startX = e.clientX;
+      lastX = e.clientX;
+      didScrub = false;
+      active = true;
+    };
+
+    const onPointerMove = (e: PointerEvent) => {
+      if (!active || !options.onMoveCursor) return;
+      const dx = e.clientX - lastX;
+      if (Math.abs(e.clientX - startX) > 10) {
+        didScrub = true;
+      }
+      if (Math.abs(dx) >= 18) {
+        const steps = Math.trunc(dx / 18);
+        options.onMoveCursor(steps);
+        lastX += steps * 18;
+      }
+    };
+
+    const onPointerEnd = () => {
+      active = false;
+    };
+
+    const onClick = () => {
+      if (!didScrub) {
+        options.onKeyPress(' ');
+      }
+      didScrub = false;
+    };
+
+    return html`
+      <button
+        class="key-btn space"
+        @pointerdown=${onPointerDown}
+        @pointermove=${onPointerMove}
+        @pointerup=${onPointerEnd}
+        @pointercancel=${onPointerEnd}
+        @click=${onClick}>
+        ${() => options.stealthMode.value ? 'stealth space' : 'space'}
+      </button>
+    `;
+  };
+
   const renderAlpha = () => {
     const isUpper = shiftState.value !== 'off';
     const shiftLabel = shiftState.value === 'caps' ? '⇪' : shiftState.value === 'once' ? '⬆' : '⇧';
@@ -58,39 +210,26 @@ export function QwertyGrid(options: {
       mountTemplate(html`<button class=${shiftClass} @click=${toggleShift}>${shiftLabel}</button>`)
     );
     for (const k of alphaRow3) {
-      const label = isUpper ? k.toUpperCase() : k;
-      row3El.appendChild(
-        mountTemplate(html`<button class="key-btn" @click=${() => handleAlphaKey(k)}>${label}</button>`)
-      );
+      row3El.appendChild(mountTemplate(createAlphaKeyBtn(k, isUpper)));
     }
-    row3El.appendChild(
-      mountTemplate(html`<button class="key-btn special" @click=${options.onBackspace}>⌫</button>`)
-    );
+    row3El.appendChild(mountTemplate(createBackspaceBtn()));
 
     return mountTemplate(html`
       <div class="keyboard-grid">
         ${mountList(
           'keyboard-row',
-          alphaRow1.map(k => {
-            const label = isUpper ? k.toUpperCase() : k;
-            return html`<button class="key-btn" @click=${() => handleAlphaKey(k)}>${label}</button>`;
-          })
+          alphaRow1.map(k => createAlphaKeyBtn(k, isUpper))
         )}
         ${mountList(
           'keyboard-row',
-          alphaRow2.map(k => {
-            const label = isUpper ? k.toUpperCase() : k;
-            return html`<button class="key-btn" @click=${() => handleAlphaKey(k)}>${label}</button>`;
-          })
+          alphaRow2.map(k => createAlphaKeyBtn(k, isUpper))
         )}
         ${row3El}
         <div class="keyboard-row">
           <button class="key-btn special" @click=${() => activeLayer.value = 'numbers'}>123</button>
           <button class="key-btn special" @click=${options.onOpenEmojis}>😏</button>
           <button class="key-btn special" @click=${() => options.onKeyPress(',')}>,</button>
-          <button class="key-btn space" @click=${() => options.onKeyPress(' ')}>
-            ${() => options.stealthMode.value ? 'stealth space' : 'space'}
-          </button>
+          ${mountTemplate(createSpaceBtn())}
           <button class="key-btn special" @click=${() => options.onKeyPress('.')}>.</button>
           <button class="key-btn send" @click=${options.onSend}>
             ${() => options.stealthMode.value ? 'Ask ⚡' : 'Send'}
@@ -121,9 +260,7 @@ export function QwertyGrid(options: {
         mountTemplate(html`<button class="key-btn" @click=${() => options.onKeyPress(k)}>${k}</button>`)
       );
     }
-    row3El.appendChild(
-      mountTemplate(html`<button class="key-btn special" @click=${options.onBackspace}>⌫</button>`)
-    );
+    row3El.appendChild(mountTemplate(createBackspaceBtn()));
 
     return mountTemplate(html`
       <div class="keyboard-grid">
@@ -140,9 +277,7 @@ export function QwertyGrid(options: {
           <button class="key-btn special" @click=${() => activeLayer.value = 'alpha'}>ABC</button>
           <button class="key-btn special" @click=${options.onOpenEmojis}>😏</button>
           <button class="key-btn special" @click=${() => options.onKeyPress(',')}>,</button>
-          <button class="key-btn space" @click=${() => options.onKeyPress(' ')}>
-            ${() => options.stealthMode.value ? 'stealth space' : 'space'}
-          </button>
+          ${mountTemplate(createSpaceBtn())}
           <button class="key-btn special" @click=${() => options.onKeyPress('.')}>.</button>
           <button class="key-btn send" @click=${options.onSend}>
             ${() => options.stealthMode.value ? 'Ask ⚡' : 'Send'}

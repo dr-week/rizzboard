@@ -135,3 +135,32 @@ export function showInputMethodPicker() {
     console.log('[Dev Mock IME Picker]');
   }
 }
+
+export function setComposingText(text: string) {
+  const android = getAndroidInterface();
+  if (android && typeof android.setComposingText === 'function') {
+    android.setComposingText(text);
+  }
+}
+
+export function finishComposingText() {
+  const android = getAndroidInterface();
+  if (android && typeof android.finishComposingText === 'function') {
+    android.finishComposingText();
+  }
+}
+
+export function moveCursor(delta: number) {
+  const android = getAndroidInterface();
+  if (android && typeof android.moveCursor === 'function') {
+    android.moveCursor(delta);
+  }
+}
+
+export function getCursorCapsMode(): number {
+  const android = getAndroidInterface();
+  if (android && typeof android.getCursorCapsMode === 'function') {
+    return Number(android.getCursorCapsMode()) || 0;
+  }
+  return 0;
+}

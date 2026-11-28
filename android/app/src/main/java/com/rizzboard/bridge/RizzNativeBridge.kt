@@ -120,4 +120,38 @@ class RizzNativeBridge(private val service: RizzInputMethodService) {
     fun showInputMethodPicker() {
         service.showKeyboardPicker()
     }
+
+    @JavascriptInterface
+    fun setComposingText(text: String) {
+        service.mainHandler.post {
+            service.currentInputConnection?.setComposingText(text, 1)
+        }
+    }
+
+    @JavascriptInterface
+    fun finishComposingText() {
+        service.mainHandler.post {
+            service.currentInputConnection?.finishComposingText()
+        }
+    }
+
+    @JavascriptInterface
+    fun moveCursor(delta: Int) {
+        if (delta == 0) return
+        val keyCode = if (delta < 0) KeyEvent.KEYCODE_DPAD_LEFT else KeyEvent.KEYCODE_DPAD_RIGHT
+        val steps = kotlin.math.abs(delta).coerceAtMost(10)
+        service.mainHandler.post {
+            val ic = service.currentInputConnection ?: return@post
+            repeat(steps) {
+                ic.sendKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, keyCode))
+                ic.sendKeyEvent(KeyEvent(KeyEvent.ACTION_UP, keyCode))
+            }
+        }
+    }
+
+    @JavascriptInterface
+    fun getCursorCapsMode(): Int {
+        val ic = service.currentInputConnection ?: return 0
+        return ic.getCursorCapsMode(EditorInfo.TYPE_TEXT_FLAG_CAP_SENTENCES)
+    }
 }
