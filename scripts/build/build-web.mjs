@@ -52,6 +52,30 @@ export async function buildWeb() {
     });
     fs.writeFileSync(path.join(downloadsOut, 'changelog.json'), JSON.stringify({ version: VERSION, entries }, null, 2));
   } catch {}
+
+  // Stage OTA WebView UI bundle + ui-manifest.json for zero-reinstall updates
+  const uiAssetsSrc = path.join(REPO_ROOT, 'android', 'app', 'src', 'main', 'assets', 'ui');
+  const otaOut = path.join(distDir, 'ota');
+  if (fs.existsSync(uiAssetsSrc)) {
+    fs.cpSync(uiAssetsSrc, otaOut, { recursive: true });
+    const otaFiles = [];
+    const walk = (dir, prefix = '') => {
+      for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+        const rel = prefix ? `${prefix}/${entry.name}` : entry.name;
+        if (entry.isDirectory()) walk(path.join(dir, entry.name), rel);
+        else otaFiles.push(rel);
+      }
+    };
+    walk(otaOut);
+    fs.writeFileSync(
+      path.join(otaOut, 'ui-manifest.json'),
+      JSON.stringify({
+        version: `${VERSION}-${Date.now()}`,
+        baseUrl: 'https://dr-week.github.io/rizzboard/ota/',
+        files: otaFiles
+      }, null, 2)
+    );
+  }
   fs.copyFileSync(
     path.join(REPO_ROOT, 'assets', 'brand', 'rizzboard-logo.svg'),
     path.join(assetsOut, 'rizzboard-logo.svg')
