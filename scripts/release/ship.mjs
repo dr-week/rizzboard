@@ -1,4 +1,6 @@
 import { execSync } from 'node:child_process';
+import fs from 'node:fs';
+import path from 'node:path';
 
 function run(cmd) {
   console.log(`\n▶ ${cmd}`);
@@ -19,4 +21,18 @@ if (status) {
 }
 
 run('git push origin main');
-console.log('\n✅ Shipped! GitHub Actions will auto-deploy the latest APK & web portal to https://dr-week.github.io/rizzboard/');
+
+// Sync web/dist directly to gh-pages so website & OTA manifest are always live immediately
+const tmpDir = '/tmp/rizzboard-gh-pages';
+fs.rmSync(tmpDir, { recursive: true, force: true });
+fs.mkdirSync(tmpDir, { recursive: true });
+fs.cpSync(path.resolve('web/dist'), tmpDir, { recursive: true });
+fs.writeFileSync(path.join(tmpDir, '.nojekyll'), '');
+const remoteUrl = execSync('git remote get-url origin').toString().trim();
+execSync(
+  `git init -q && git checkout -b gh-pages && git add -A && git commit -qm "docs(portal): auto-deploy latest build" && git push -f ${remoteUrl} gh-pages:gh-pages`,
+  { cwd: tmpDir, stdio: 'inherit' }
+);
+fs.rmSync(tmpDir, { recursive: true, force: true });
+
+console.log('\n✅ Shipped to main & deployed live to https://dr-week.github.io/rizzboard/');
