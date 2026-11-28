@@ -597,6 +597,15 @@ export function App() {
             } else {
               handleLiveScreenScan();
             }
+          },
+          onSwipeWord: (pathChars: string) => {
+            const matches = predictive.matchSwipePath(pathChars, 1);
+            if (matches.length > 0) {
+              const word = matches[0] + ' ';
+              typedBuffer.value += word;
+              commitToChat(word);
+              triggerHaptic('click');
+            }
           }
         });
       }}

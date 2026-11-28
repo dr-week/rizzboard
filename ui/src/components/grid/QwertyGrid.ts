@@ -21,6 +21,7 @@ export function QwertyGrid(options: {
   onMoveCursor?: (delta: number) => void;
   onDeleteWord?: () => void;
   onSwipeUpSpace?: () => void;
+  onSwipeWord?: (pathChars: string) => void;
   onVoiceInput?: () => void;
 }) {
   const shiftState = signal<ShiftState>('off');
