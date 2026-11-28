@@ -45,7 +45,13 @@ class RizzInputMethodService : InputMethodService() {
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreateInputView(): View {
-        val wv = WebView(this)
+        val wv = WebView(this).apply {
+            layoutParams = android.view.ViewGroup.LayoutParams(
+                android.view.ViewGroup.LayoutParams.MATCH_PARENT,
+                (290 * resources.displayMetrics.density).toInt()
+            )
+            minimumHeight = (260 * resources.displayMetrics.density).toInt()
+        }
         webView = wv
 
         @Suppress("DEPRECATION")
