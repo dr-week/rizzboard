@@ -77,6 +77,20 @@ const activeSuggestions = computed(() => {
 kotlinBridge.registerNativeCallback('appContextChanged', (payload: any) => {
   if (payload?.packageName) {
     activeHostPackage.value = payload.packageName;
+    // Automatically scan screen context in background so user doesn't have to click Scan manually
+    try {
+      const scan = requestLiveScreenScan();
+      if (scan.status === 'ok' && scan.blocks.length > 0) {
+        const extracted = contextRouter.ingestScreenBlocks(scan.blocks, 'accessibility', {
+          appPackage: scan.appPackage ?? payload.packageName
+        });
+        if (extracted) {
+          pendingContext.value = extracted;
+        }
+      }
+    } catch {
+      // Silent fallback to notification/clipboard tiers
+    }
   }
 });
 
@@ -265,6 +279,26 @@ function handleKey(char: string) {
     stealthBuffer.value += char;
     return;
   }
+
+  // Autocorrect & personal dictionary learning on word boundary
+  if (char === ' ' || char === '.' || char === ',' || char === '!' || char === '?') {
+    const match = typedBuffer.value.match(/([a-zA-Z']+)$/);
+    if (match) {
+      const lastWord = match[1];
+      const corrected = predictive.autocorrect(lastWord);
+      if (corrected && corrected !== lastWord) {
+        for (let i = 0; i < lastWord.length; i++) {
+          deleteCharacter();
+        }
+        typedBuffer.value = typedBuffer.value.slice(0, -lastWord.length) + corrected + char;
+        commitToChat(corrected + char);
+        return;
+      } else {
+        predictive.learnWord(lastWord);
+      }
+    }
+  }
+
   typedBuffer.value += char;
   commitToChat(char);
 }
