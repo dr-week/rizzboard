@@ -5,7 +5,8 @@ import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export const REPO_ROOT = path.resolve(__dirname, '../..');
-export const VERSION = '1.1.0';
+const gradleText = fs.readFileSync(path.join(REPO_ROOT, 'android/app/build.gradle.kts'), 'utf8');
+export const VERSION = gradleText.match(/versionName\s*=\s*"([^"]+)"/)?.[1] || '1.2.1';
 export const RELEASE_DIR = path.join(REPO_ROOT, 'releases', `v${VERSION}`);
 
 export function logDept(dept, message) {

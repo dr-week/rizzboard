@@ -38,8 +38,20 @@ export async function buildWeb() {
     logLevel: 'silent'
   });
 
-  fs.copyFileSync(path.join(webDir, 'index.html'), path.join(distDir, 'index.html'));
+  const rawHtml = fs.readFileSync(path.join(webDir, 'index.html'), 'utf8');
+  fs.writeFileSync(path.join(distDir, 'index.html'), rawHtml.replace(/1\.1\.0/g, VERSION));
   fs.cpSync(path.join(webDir, 'styles'), stylesOut, { recursive: true });
+
+  // Auto-generate changelog.json from recent git commits
+  try {
+    const { execSync } = await import('node:child_process');
+    const logOut = execSync('git log -n 10 --pretty=format:"%h|%ad|%s" --date=short', { cwd: REPO_ROOT }).toString().trim();
+    const entries = logOut.split('\n').filter(Boolean).map(line => {
+      const [hash, date, ...rest] = line.split('|');
+      return { hash, date, message: rest.join('|') };
+    });
+    fs.writeFileSync(path.join(downloadsOut, 'changelog.json'), JSON.stringify({ version: VERSION, entries }, null, 2));
+  } catch {}
   fs.copyFileSync(
     path.join(REPO_ROOT, 'assets', 'brand', 'rizzboard-logo.svg'),
     path.join(assetsOut, 'rizzboard-logo.svg')
