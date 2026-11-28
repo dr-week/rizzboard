@@ -18,6 +18,8 @@ export function QwertyGrid(options: {
   onSend: () => void;
   onOpenEmojis: () => void;
   onMoveCursor?: (delta: number) => void;
+  onDeleteWord?: () => void;
+  onSwipeUpSpace?: () => void;
   onVoiceInput?: () => void;
 }) {
   const shiftState = signal<ShiftState>('off');
@@ -104,6 +106,7 @@ export function QwertyGrid(options: {
     let delayTimer: ReturnType<typeof setTimeout> | null = null;
     let repeatTimer: ReturnType<typeof setInterval> | null = null;
     let didRepeat = false;
+    let startX = 0;
 
     const stopRepeat = () => {
       if (delayTimer) {
@@ -116,7 +119,8 @@ export function QwertyGrid(options: {
       }
     };
 
-    const onPointerDown = () => {
+    const onPointerDown = (e: PointerEvent) => {
+      startX = e.clientX;
       didRepeat = false;
       stopRepeat();
       delayTimer = setTimeout(() => {
@@ -126,6 +130,14 @@ export function QwertyGrid(options: {
           options.onBackspace();
         }, 55);
       }, 350);
+    };
+
+    const onPointerMove = (e: PointerEvent) => {
+      if (startX - e.clientX >= 28 && !didRepeat) {
+        didRepeat = true;
+        stopRepeat();
+        options.onDeleteWord?.();
+      }
     };
 
     const onClick = () => {
@@ -140,6 +152,7 @@ export function QwertyGrid(options: {
       <button
         class="key-btn special"
         @pointerdown=${onPointerDown}
+        @pointermove=${onPointerMove}
         @pointerup=${stopRepeat}
         @pointerleave=${stopRepeat}
         @pointercancel=${stopRepeat}
@@ -151,19 +164,28 @@ export function QwertyGrid(options: {
 
   const createSpaceBtn = () => {
     let startX = 0;
+    let startY = 0;
     let lastX = 0;
     let didScrub = false;
     let active = false;
 
     const onPointerDown = (e: PointerEvent) => {
       startX = e.clientX;
+      startY = e.clientY;
       lastX = e.clientX;
       didScrub = false;
       active = true;
     };
 
     const onPointerMove = (e: PointerEvent) => {
-      if (!active || !options.onMoveCursor) return;
+      if (!active) return;
+      if (startY - e.clientY >= 28 && !didScrub) {
+        didScrub = true;
+        active = false;
+        options.onSwipeUpSpace?.();
+        return;
+      }
+      if (!options.onMoveCursor) return;
       const dx = e.clientX - lastX;
       if (Math.abs(e.clientX - startX) > 10) {
         didScrub = true;

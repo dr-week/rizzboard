@@ -497,6 +497,23 @@ export function App() {
           onMoveCursor: (delta: number) => {
             triggerHaptic('light');
             moveCursor(delta);
+          },
+          onDeleteWord: () => {
+            triggerHaptic('heavy');
+            const m = typedBuffer.value.match(/(\S+\s*)$/);
+            const count = m ? m[1].length : 1;
+            typedBuffer.value = typedBuffer.value.slice(0, -count);
+            for (let i = 0; i < count; i++) {
+              deleteCharacter();
+            }
+          },
+          onSwipeUpSpace: () => {
+            triggerHaptic('click');
+            if (pendingContext.value) {
+              openRepliesForContext(pendingContext.value);
+            } else {
+              handleLiveScreenScan();
+            }
           }
         });
       }}

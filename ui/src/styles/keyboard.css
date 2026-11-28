@@ -59,3 +59,33 @@
   transform: scale(0.98);
   background: rgba(255, 255, 255, 0.1);
 }
+
+.rizz-app[data-theme="amoled"] {
+  background: #000000;
+}
+
+.rizz-app[data-theme="amoled"] .key-btn {
+  background: #141414;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.rizz-app[data-theme="light"] {
+  background: #eef1f5;
+  color: #111827;
+}
+
+.rizz-app[data-theme="light"] .key-btn {
+  background: #ffffff;
+  color: #111827;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+}
+
+.rizz-app[data-theme="light"] .key-btn.special {
+  background: #d8dee9;
+  color: #1f2937;
+}
+
+.rizz-app[data-theme="light"] .action-pill {
+  background: #ffffff;
+  color: #1f2937;
+}
