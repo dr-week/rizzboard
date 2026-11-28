@@ -130,3 +130,22 @@
   pointer-events: none;
   z-index: 50;
 }
+
+/* Gboard Material You Dark polish */
+.rizz-app[data-theme="slate"] {
+  background: #1b1b1d;
+}
+
+.rizz-app[data-theme="slate"] .key-btn {
+  background: #2c2c2e;
+  border-radius: 6px;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.35);
+}
+
+.rizz-app[data-theme="slate"] .key-btn.special {
+  background: #3a3a3c;
+}
+
+.rizz-app[data-theme="slate"] .key-btn.send {
+  border-radius: 20px;
+}
