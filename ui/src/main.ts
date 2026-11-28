@@ -33,6 +33,7 @@ import { ClipboardPanel } from './components/panels/ClipboardPanel.ts';
 import { RoastPanel } from './components/panels/RoastPanel.ts';
 import { NextMovePanel } from './components/panels/NextMovePanel.ts';
 import { TextEditPanel } from './components/panels/TextEditPanel.ts';
+import { HelpPanel } from './components/panels/HelpPanel.ts';
 
 import './styles/keyboard.css';
 
@@ -40,7 +41,7 @@ const predictive = new PredictiveEngine();
 const contextRouter = new HybridContextRouter();
 
 // Reactive UI State
-export type KeyboardView = 'qwerty' | 'emojis' | 'clipboard' | 'roast' | 'nextmove' | 'textedit';
+export type KeyboardView = 'qwerty' | 'emojis' | 'clipboard' | 'roast' | 'nextmove' | 'textedit' | 'help';
 const currentView = signal<KeyboardView>('qwerty');
 const typedBuffer = signal<string>('');
 
@@ -394,7 +395,9 @@ export function App() {
           showInputMethodPicker();
         },
         onToggleTextEdit: () =>
-          (currentView.value = currentView.value === 'textedit' ? 'qwerty' : 'textedit')
+          (currentView.value = currentView.value === 'textedit' ? 'qwerty' : 'textedit'),
+        onToggleHelp: () =>
+          (currentView.value = currentView.value === 'help' ? 'qwerty' : 'help')
       })}
 
       ${() =>
@@ -470,6 +473,11 @@ export function App() {
         if (view === 'textedit') {
           return TextEditPanel({
             onBackspace: handleBackspace,
+            onClose: () => (currentView.value = 'qwerty')
+          });
+        }
+        if (view === 'help') {
+          return HelpPanel({
             onClose: () => (currentView.value = 'qwerty')
           });
         }
