@@ -89,3 +89,13 @@
   background: #ffffff;
   color: #1f2937;
 }
+
+.rizz-app[data-one-handed="left"] .keyboard-grid-wrapper {
+  width: 82%;
+  margin-right: auto;
+}
+
+.rizz-app[data-one-handed="right"] .keyboard-grid-wrapper {
+  width: 82%;
+  margin-left: auto;
+}

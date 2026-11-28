@@ -53,6 +53,15 @@ const activeTheme = signal<'slate' | 'amoled' | 'light'>(
     return 'slate';
   })())
 );
+const oneHandedMode = signal<'off' | 'right' | 'left'>(
+  ((() => {
+    try {
+      const saved = localStorage.getItem('rizzboard_one_handed');
+      if (saved === 'right' || saved === 'left' || saved === 'off') return saved;
+    } catch {}
+    return 'off';
+  })())
+);
 
 // Hybrid Context & Stealth Input State
 const activeHostPackage = signal<string | undefined>(undefined);
@@ -375,7 +384,7 @@ function acceptRoastFix(improved: string) {
 
 export function App() {
   return html`
-    <div class="rizz-app" data-theme=${() => activeTheme.value}>
+    <div class="rizz-app" data-theme=${() => activeTheme.value} data-one-handed=${() => oneHandedMode.value}>
       ${ActionRibbon({
         activeContext: pendingContext,
         stealthMode,
@@ -412,6 +421,12 @@ export function App() {
           const next = activeTheme.value === 'slate' ? 'amoled' : activeTheme.value === 'amoled' ? 'light' : 'slate';
           activeTheme.value = next;
           try { localStorage.setItem('rizzboard_theme', next); } catch {}
+        },
+        onToggleOneHanded: () => {
+          triggerHaptic('click');
+          const next = oneHandedMode.value === 'off' ? 'right' : oneHandedMode.value === 'right' ? 'left' : 'off';
+          oneHandedMode.value = next;
+          try { localStorage.setItem('rizzboard_one_handed', next); } catch {}
         }
       })}
 
