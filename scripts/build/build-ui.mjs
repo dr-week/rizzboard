@@ -9,7 +9,7 @@ export function buildUi() {
   const androidAssetsUi = path.join(REPO_ROOT, 'android', 'app', 'src', 'main', 'assets', 'ui');
 
   logDept('Dept 3: Zuari UI', 'Installing dependencies & building reactive IME bundle...');
-  execSync('pnpm install --prefer-offline', { cwd: uiDir, stdio: 'inherit' });
+  execSync('pnpm install', { cwd: uiDir, stdio: 'inherit' });
   execSync('pnpm build', { cwd: uiDir, stdio: 'inherit' });
 
   logDept('Dept 3: Zuari UI', 'Syncing compiled bundle into Android IME assets...');
