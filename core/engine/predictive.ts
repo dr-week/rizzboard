@@ -159,6 +159,31 @@ export class PredictiveEngine {
   }
 
   /**
+   * Matches a continuous swipe-to-type key sequence against dictionary words.
+   */
+  public matchSwipePath(pathChars: string, maxResults = 3): string[] {
+    const clean = pathChars.toLowerCase().replace(/[^a-z]/g, '');
+    if (clean.length < 2) return [];
+    const first = clean[0];
+    const last = clean[clean.length - 1];
+    const results: Array<{ word: string; freq: number }> = [];
+
+    for (const word of this.dictionaryWords) {
+      if (word.length < 2 || word[0] !== first || word[word.length - 1] !== last) continue;
+      let idx = 0;
+      for (let i = 0; i < clean.length && idx < word.length; i++) {
+        if (clean[i] === word[idx]) idx++;
+      }
+      if (idx === word.length) {
+        results.push({ word, freq: this.getWordFrequency(word) });
+      }
+    }
+
+    results.sort((a, b) => b.freq - a.freq);
+    return results.slice(0, maxResults).map(r => r.word);
+  }
+
+  /**
    * Returns an autocorrected replacement if the word is a known typo/contraction
    * or within Levenshtein edit distance 1 of a high-frequency dictionary word.
    */
