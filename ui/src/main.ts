@@ -32,6 +32,7 @@ import { EmojiPanel } from './components/panels/EmojiPanel.ts';
 import { ClipboardPanel } from './components/panels/ClipboardPanel.ts';
 import { RoastPanel } from './components/panels/RoastPanel.ts';
 import { NextMovePanel } from './components/panels/NextMovePanel.ts';
+import { TextEditPanel } from './components/panels/TextEditPanel.ts';
 
 import './styles/keyboard.css';
 
@@ -39,7 +40,7 @@ const predictive = new PredictiveEngine();
 const contextRouter = new HybridContextRouter();
 
 // Reactive UI State
-export type KeyboardView = 'qwerty' | 'emojis' | 'clipboard' | 'roast' | 'nextmove';
+export type KeyboardView = 'qwerty' | 'emojis' | 'clipboard' | 'roast' | 'nextmove' | 'textedit';
 const currentView = signal<KeyboardView>('qwerty');
 const typedBuffer = signal<string>('');
 
@@ -391,7 +392,9 @@ export function App() {
         onSwitchKeyboard: () => {
           triggerHaptic('click');
           showInputMethodPicker();
-        }
+        },
+        onToggleTextEdit: () =>
+          (currentView.value = currentView.value === 'textedit' ? 'qwerty' : 'textedit')
       })}
 
       ${() =>
@@ -461,6 +464,12 @@ export function App() {
           return RoastPanel({
             roast: currentRoast,
             onApplyUpgrade: acceptRoastFix,
+            onClose: () => (currentView.value = 'qwerty')
+          });
+        }
+        if (view === 'textedit') {
+          return TextEditPanel({
+            onBackspace: handleBackspace,
             onClose: () => (currentView.value = 'qwerty')
           });
         }

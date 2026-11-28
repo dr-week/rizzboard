@@ -154,4 +154,34 @@ class RizzNativeBridge(private val service: RizzInputMethodService) {
         val ic = service.currentInputConnection ?: return 0
         return ic.getCursorCapsMode(EditorInfo.TYPE_TEXT_FLAG_CAP_SENTENCES)
     }
+
+    @JavascriptInterface
+    fun performEditAction(action: String) {
+        val id = when (action) {
+            "selectAll" -> android.R.id.selectAll
+            "copy" -> android.R.id.copy
+            "cut" -> android.R.id.cut
+            "paste" -> android.R.id.paste
+            else -> return
+        }
+        service.mainHandler.post {
+            service.currentInputConnection?.performContextMenuAction(id)
+        }
+    }
+
+    @JavascriptInterface
+    fun sendDpad(direction: String) {
+        val code = when (direction) {
+            "left" -> KeyEvent.KEYCODE_DPAD_LEFT
+            "right" -> KeyEvent.KEYCODE_DPAD_RIGHT
+            "up" -> KeyEvent.KEYCODE_DPAD_UP
+            "down" -> KeyEvent.KEYCODE_DPAD_DOWN
+            else -> return
+        }
+        service.mainHandler.post {
+            val ic = service.currentInputConnection ?: return@post
+            ic.sendKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, code))
+            ic.sendKeyEvent(KeyEvent(KeyEvent.ACTION_UP, code))
+        }
+    }
 }

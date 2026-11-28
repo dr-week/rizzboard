@@ -164,3 +164,17 @@ export function getCursorCapsMode(): number {
   }
   return 0;
 }
+
+export function performEditAction(action: 'selectAll' | 'copy' | 'cut' | 'paste') {
+  const android = getAndroidInterface();
+  if (android && typeof android.performEditAction === 'function') {
+    android.performEditAction(action);
+  }
+}
+
+export function sendDpad(direction: 'left' | 'right' | 'up' | 'down') {
+  const android = getAndroidInterface();
+  if (android && typeof android.sendDpad === 'function') {
+    android.sendDpad(direction);
+  }
+}

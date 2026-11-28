@@ -16,6 +16,7 @@ export function ActionRibbon(options: {
   onToggleEmojis: () => void;
   onVoiceInput: () => void;
   onSwitchKeyboard: () => void;
+  onToggleTextEdit: () => void;
 }) {
   return mountTemplate(html`
     <div class="action-bar">
@@ -45,6 +46,9 @@ export function ActionRibbon(options: {
       </button>
       <button class="action-pill" @click=${options.onToggleEmojis}>
         😏 Emojis
+      </button>
+      <button class="action-pill" @click=${options.onToggleTextEdit} title="Text Editing">
+        ✂️
       </button>
       <button class="action-pill" @click=${options.onSwitchKeyboard} title="Switch Keyboard">
         🌐
