@@ -48,6 +48,7 @@ import {
   oneHandedMode,
   showNumberRow,
   keyboardHeight,
+  incognitoMode,
   activeHostPackage,
   pendingContext,
   activeResolution,
@@ -306,7 +307,7 @@ function handleKey(char: string) {
         typedBuffer.value = typedBuffer.value.slice(0, -lastWord.length) + corrected + char;
         commitToChat(corrected + char);
         return;
-      } else {
+      } else if (!incognitoMode.value) {
         predictive.learnWord(lastWord);
       }
     }

@@ -41,6 +41,7 @@ export const showNumberRow = signal<boolean>(
 export const keyboardHeight = signal<'normal' | 'compact' | 'tall'>(
   readStorage('rizzboard_height', ['normal', 'compact', 'tall'], 'normal')
 );
+export const incognitoMode = signal<boolean>(false);
 
 export const activeHostPackage = signal<string | undefined>(undefined);
 export const pendingContext = signal<ConversationContext | null>(null);
