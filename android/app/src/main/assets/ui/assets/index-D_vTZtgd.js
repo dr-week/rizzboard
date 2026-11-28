@@ -1,0 +1,447 @@
+var Ie=Object.defineProperty;var De=(e,t,n)=>t in e?Ie(e,t,{enumerable:!0,configurable:!0,writable:!0,value:n}):e[t]=n;var A=(e,t,n)=>De(e,typeof t!="symbol"?t+"":t,n);(function(){const t=document.createElement("link").relList;if(t&&t.supports&&t.supports("modulepreload"))return;for(const r of document.querySelectorAll('link[rel="modulepreload"]'))o(r);new MutationObserver(r=>{for(const a of r)if(a.type==="childList")for(const i of a.addedNodes)i.tagName==="LINK"&&i.rel==="modulepreload"&&o(i)}).observe(document,{childList:!0,subtree:!0});function n(r){const a={};return r.integrity&&(a.integrity=r.integrity),r.referrerPolicy&&(a.referrerPolicy=r.referrerPolicy),r.crossOrigin==="use-credentials"?a.credentials="include":r.crossOrigin==="anonymous"?a.credentials="omit":a.credentials="same-origin",a}function o(r){if(r.ep)return;r.ep=!0;const a=n(r);fetch(r.href,a)}})();let ie=null;const te=new Set;let G=!1;function Pe(){return ie}function ne(e){const t=ie;return ie=e,t}function Ae(e){e.isStale=!0,G?te.add(e):e.execute()}function Le(e){const t=G;G=!0;try{return e()}finally{G=t,G||We()}}function We(){for(;te.size>0;){const e=Array.from(te);te.clear();for(const t of e)t.isStale&&t.execute()}}class je{constructor(t){A(this,"_value");A(this,"_subscribers",new Set);this._value=t}get value(){const t=Pe();return t&&(this._subscribers.add(t),t.dependencies.add(this)),this._value}set value(t){Object.is(this._value,t)||(this._value=t,this.notify())}peek(){return this._value}notify(){const t=Array.from(this._subscribers);for(const n of t)Ae(n)}_unsubscribe(t){this._subscribers.delete(t)}}function k(e){return new je(e)}class He{constructor(t){A(this,"_value");A(this,"_node");A(this,"_subscribers",new Set);A(this,"_isDirty",!0);A(this,"_fn");this._fn=t,this._node={dependencies:new Set,isStale:!0,execute:()=>{if(!this._isDirty){this._isDirty=!0;const n=Array.from(this._subscribers);for(const o of n)Ae(o)}}}}get value(){this._isDirty&&this._recompute();const t=Pe();return t&&(this._subscribers.add(t),t.dependencies.add(this)),this._value}peek(){return this._isDirty&&this._recompute(),this._value}_unsubscribe(t){this._subscribers.delete(t)}_recompute(){for(const n of this._node.dependencies)n._unsubscribe(this._node);this._node.dependencies.clear();const t=ne(this._node);try{this._value=this._fn(),this._isDirty=!1,this._node.isStale=!1}finally{ne(t)}}}function Ne(e){return new He(e)}let Fe=null;function qe(){return Fe}function se(e){let t;const n={dependencies:new Set,isStale:!1,execute:()=>{for(const i of n.dependencies)i._unsubscribe(n);if(n.dependencies.clear(),typeof t=="function")try{t()}catch(i){console.error("[Nova Signal Effect Cleanup Error]:",i)}const a=ne(n);try{t=e()}finally{ne(a),n.isStale=!1}}};n.execute();const o=()=>{for(const a of n.dependencies)a._unsubscribe(n);n.dependencies.clear(),typeof t=="function"&&t()},r=qe();return r&&r.addCleanup(o),o}function _e(){return typeof window<"u"&&"Part"in window&&"ChildNodePart"in window&&typeof window.getParts=="function"}class pe{constructor(t){A(this,"parentNode");A(this,"previousSibling");A(this,"nextSibling");A(this,"value");A(this,"_currentNode");const n=t.parentNode;if(!n)throw new Error("[Zuari DOM Parts]: Placeholder node must have a parent container.");this.parentNode=n,this.previousSibling=t.previousSibling,this.nextSibling=t.nextSibling;const o=document.createTextNode("");n.replaceChild(o,t),this._currentNode=o}setValue(t){if(this.value=t,t instanceof DocumentFragment){const n=document.createTextNode("");this.parentNode.replaceChild(n,this._currentNode),this.parentNode.insertBefore(t,n),this._currentNode=n;return}if(t instanceof Node){this._currentNode!==t&&(this.parentNode.replaceChild(t,this._currentNode),this._currentNode=t);return}if(this._currentNode instanceof Text)this._currentNode.data=String(t??"");else{const n=document.createTextNode(String(t??""));this.parentNode.replaceChild(n,this._currentNode),this._currentNode=n}}disconnect(){}}class me{constructor(t,n){A(this,"element");A(this,"attributeName");A(this,"value");this.element=t,this.attributeName=n}setValue(t){this.value=t,t===!1||t===null||t===void 0?this.element.removeAttribute(this.attributeName):this.element.setAttribute(this.attributeName,String(t))}disconnect(){this.element.removeAttribute(this.attributeName)}}function Ke(e){if(_e())try{const t=window.ChildNodePart;return new t(e)}catch{return new pe(e)}return new pe(e)}function Ve(e,t){if(_e())try{const n=window.AttributePart;return new n(e,t)}catch{return new me(e,t)}return new me(e,t)}function Ze(e,t,n,o){const r=Ue(e,`<!--zuari-hole-${t}-->`);if(r){const b=Ke(r);if(fe(n)){const u=se(()=>b.setValue(ye(n)));o.push(()=>{var p;u(),(p=b.disconnect)==null||p.call(b)})}else b.setValue(n);return}const a=`data-zuari-attr-${t}`,i=Ge(e,a);if(!i)return;const{element:c,attrName:d}=i;if(d.startsWith("@")||d.startsWith("on")){const b=(d.startsWith("@")?d.slice(1):d.slice(2)).toLowerCase();if(c.removeAttribute(d),typeof n!="function")return;const u=n;c.addEventListener(b,u),o.push(()=>c.removeEventListener(b,u));return}const y=Ve(c,d);if(fe(n)){const b=se(()=>y.setValue(ye(n)));o.push(()=>{var u;b(),(u=y.disconnect)==null||u.call(y)})}else y.setValue(n)}function fe(e){return typeof e=="object"&&e!==null&&"value"in e||typeof e=="function"}function ye(e){return typeof e=="object"&&e!==null&&"value"in e?e.value:typeof e=="function"?e():e}function Ue(e,t){const n=document.createNodeIterator(e,NodeFilter.SHOW_COMMENT);let o=n.nextNode();for(;o;){if(`<!--${o.data}-->`===t)return o;o=n.nextNode()}return null}function Ge(e,t){const n=document.createNodeIterator(e,NodeFilter.SHOW_ELEMENT);let o=n.nextNode();for(;o;){for(const r of Array.from(o.attributes))if(r.value.includes(t))return{element:o,attrName:r.name};o=n.nextNode()}return null}const ge=new Map,Ye="<!--zuari-hole-",Je="-->",Xe="data-zuari-attr-";function h(e,...t){return{strings:e,values:t}}function ce(e,t){const{strings:n,values:o}=e,r=n.join("<!--?-->");let a=ge.get(r);a||(a=document.createElement("template"),a.innerHTML=n.reduce((y,b,u)=>{if(u>=o.length)return y+b;const s=/=["']?[^"'>]*$/.test(b)?`"${Xe}${u}"`:`${Ye}${u}${Je}`;return y+b+s},""),ge.set(r,a));const i=a.content.cloneNode(!0),c=Array.from(i.childNodes),d=[];return o.forEach((y,b)=>Ze(i,b,y,d)),{fragment:i,destroy(){d.forEach(y=>y()),c.forEach(y=>{var b;return(b=y.parentNode)==null?void 0:b.removeChild(y)})}}}const Qe={primary:"#006A6A",onPrimary:"#FFFFFF",primaryContainer:"#6FF7F6",onPrimaryContainer:"#002020",secondary:"#4A6363",onSecondary:"#FFFFFF",background:"#FAFDFD",onBackground:"#191C1C",surface:"#FAFDFD",onSurface:"#191C1C",surfaceVariant:"#DAE5E4",outline:"#6F7979"},et={primary:"#4CDADA",onPrimary:"#003737",primaryContainer:"#004F4F",onPrimaryContainer:"#6FF7F6",secondary:"#B1CCCC",onSecondary:"#1C3534",background:"#191C1C",onBackground:"#E1E3E3",surface:"#191C1C",onSurface:"#E1E3E3",surfaceVariant:"#3F4948",outline:"#899392"};function tt(e=!1){const t=k(e),n=k(e?{...et}:{...Qe}),o=Ne(()=>!!(typeof navigator<"u"&&/android/i.test(navigator.userAgent)||typeof window<"u"&&window.Android)),r=new Map;typeof window<"u"&&(window.__zuariKotlinDispatcher=(u,p)=>{const s=r.get(u);if(s)try{const g=JSON.parse(p);s(g)}catch{s(p)}});function a(u,...p){return new Promise((s,g)=>{if(typeof window<"u"&&window.Android){const P=window.Android;if(typeof P[u]=="function")try{const w=P[u](...p);try{s(JSON.parse(w))}catch{s(w)}return}catch(w){g(w);return}}s({success:!0,mock:!0,function:u,args:p})})}function i(u,p){return r.set(u,p),()=>{r.delete(u)}}function c(u){Le(()=>{n.value={...n.value,...u}})}function d(u){const p=(u==null?void 0:u.packageName)??"com.zuari.ui.theme",s=(u==null?void 0:u.themeName)??"ZuariTheme",g={...n.value,...(u==null?void 0:u.colors)??{}};return`package ${p}
+
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.*
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
+
+// Native Material 3 Dynamic Colors generated by Zuari (@zuari/kotlin)
+val ZuariPrimary = Color(android.graphics.Color.parseColor("${g.primary}"))
+val ZuariOnPrimary = Color(android.graphics.Color.parseColor("${g.onPrimary}"))
+val ZuariPrimaryContainer = Color(android.graphics.Color.parseColor("${g.primaryContainer}"))
+val ZuariOnPrimaryContainer = Color(android.graphics.Color.parseColor("${g.onPrimaryContainer}"))
+val ZuariSecondary = Color(android.graphics.Color.parseColor("${g.secondary}"))
+val ZuariOnSecondary = Color(android.graphics.Color.parseColor("${g.onSecondary}"))
+val ZuariBackground = Color(android.graphics.Color.parseColor("${g.background}"))
+val ZuariOnBackground = Color(android.graphics.Color.parseColor("${g.onBackground}"))
+val ZuariSurface = Color(android.graphics.Color.parseColor("${g.surface}"))
+val ZuariOnSurface = Color(android.graphics.Color.parseColor("${g.onSurface}"))
+val ZuariSurfaceVariant = Color(android.graphics.Color.parseColor("${g.surfaceVariant}"))
+val ZuariOutline = Color(android.graphics.Color.parseColor("${g.outline}"))
+
+private val ZuariColorScheme = lightColorScheme(
+    primary = ZuariPrimary,
+    onPrimary = ZuariOnPrimary,
+    primaryContainer = ZuariPrimaryContainer,
+    onPrimaryContainer = ZuariOnPrimaryContainer,
+    secondary = ZuariSecondary,
+    onSecondary = ZuariOnSecondary,
+    background = ZuariBackground,
+    onBackground = ZuariOnBackground,
+    surface = ZuariSurface,
+    onSurface = ZuariOnSurface,
+    surfaceVariant = ZuariSurfaceVariant,
+    outline = ZuariOutline
+)
+
+@Composable
+fun ${s}(
+    darkTheme: Boolean = isSystemInDarkTheme(),
+    content: @Composable () -> Unit
+) {
+    MaterialTheme(
+        colorScheme = ZuariColorScheme,
+        typography = Typography(),
+        content = content
+    )
+}
+`}function y(u){const p=(u==null?void 0:u.themeName)??"Theme.Zuari.Native",s={...n.value,...(u==null?void 0:u.colors)??{}};return`<?xml version="1.0" encoding="utf-8"?>
+<!-- Generated by @zuari/kotlin Native Android Bridge -->
+<resources>
+    <style name="${p}" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">${s.primary}</item>
+        <item name="colorOnPrimary">${s.onPrimary}</item>
+        <item name="colorPrimaryContainer">${s.primaryContainer}</item>
+        <item name="colorOnPrimaryContainer">${s.onPrimaryContainer}</item>
+        <item name="colorSecondary">${s.secondary}</item>
+        <item name="colorOnSecondary">${s.onSecondary}</item>
+        <item name="android:colorBackground">${s.background}</item>
+        <item name="colorOnBackground">${s.onBackground}</item>
+        <item name="colorSurface">${s.surface}</item>
+        <item name="colorOnSurface">${s.onSurface}</item>
+        <item name="colorSurfaceVariant">${s.surfaceVariant}</item>
+        <item name="colorOutline">${s.outline}</item>
+    </style>
+</resources>
+`}function b(u){const p=u??(typeof document<"u"?document.documentElement:null);return p?se(()=>{const s=n.value;p.style.setProperty("--md-sys-color-primary",s.primary),p.style.setProperty("--md-sys-color-on-primary",s.onPrimary),p.style.setProperty("--md-sys-color-primary-container",s.primaryContainer),p.style.setProperty("--md-sys-color-on-primary-container",s.onPrimaryContainer),p.style.setProperty("--md-sys-color-secondary",s.secondary),p.style.setProperty("--md-sys-color-on-secondary",s.onSecondary),p.style.setProperty("--md-sys-color-background",s.background),p.style.setProperty("--md-sys-color-on-background",s.onBackground),p.style.setProperty("--md-sys-color-surface",s.surface),p.style.setProperty("--md-sys-color-on-surface",s.onSurface),p.style.setProperty("--md-sys-color-surface-variant",s.surfaceVariant),p.style.setProperty("--md-sys-color-outline",s.outline)}):()=>{}}return{isAndroid:o,dynamicColors:n,isDarkTheme:t,callNativeFunction:a,registerNativeCallback:i,generateComposeThemeCode:d,generateXmlThemeCode:y,ingestDynamicPalette:c,applyToCssVariables:b}}const re=tt(!0);function O(){return typeof window<"u"&&window.Android?window.Android:null}function F(e){const t=O();t?t.commitText(e):console.log("[Dev Mock Commit]:",e)}function X(){const e=O();e?e.deleteBackward():console.log("[Dev Mock Delete]")}function nt(){const e=O();e?e.sendEnter():console.log("[Dev Mock Enter]")}function f(e="click"){const t=O();t&&typeof t.triggerHaptic=="function"&&t.triggerHaptic(e)}function ot(e){const t=O();if(t&&typeof t.requestScreenshotAnalysis=="function")try{const n=t.requestScreenshotAnalysis(e);return JSON.parse(n)}catch{return{status:"error",blocks:[]}}return{status:"ok",blocks:[{text:"Are you free for drinks this weekend?",x:48,y:420,width:320,screenWidth:1080}]}}function Me(){const e=O();if(e&&typeof e.requestScreenScan=="function")try{const t=e.requestScreenScan();return JSON.parse(t)}catch{return{status:"error",blocks:[]}}return{status:"ok",appPackage:"com.snapchat.android",blocks:[{text:"What is your biggest red flag?",x:52,y:460,width:300,screenWidth:1080}]}}function rt(){const e=O();if(e&&typeof e.getActiveContext=="function")try{return JSON.parse(e.getActiveContext())}catch{return{status:"none"}}return{status:"none"}}function Re(e){const t=O();t&&typeof t.openSystemSetting=="function"?t.openSystemSetting(e):console.log("[Dev Mock Open Setting]:",e)}function at(){const e=O();e&&typeof e.startVoiceTyping=="function"?e.startVoiceTyping():console.log("[Dev Mock Voice Typing]")}function it(){const e=O();e&&typeof e.showInputMethodPicker=="function"?e.showInputMethodPicker():console.log("[Dev Mock IME Picker]")}function st(e){const t=O();t&&typeof t.moveCursor=="function"&&t.moveCursor(e)}function lt(e){const t=O();t&&typeof t.performEditAction=="function"&&t.performEditAction(e)}function ct(e){const t=O();t&&typeof t.sendDpad=="function"&&t.sendDpad(e)}function ve(e,t){return`You are an elite wingman who excels at playful, concise, charismatic banter.
+Your task: Suggest 3 distinct next moves for a dating app conversation.
+Strict rules:
+1. MAX 12 words per line.
+2. NO cheesy cliché compliments like "Hey cutie" or "You must be tired from running through my mind".
+3. Use witty banter, slight teasing, or confident playful framing.
+4. Output MUST be valid JSON array with keys: "vibe" (Smooth | Tease | Bold) and "line" (string).
+
+Partner said: "${e}"
+${t?`Context I said previously: "${t}"`:""}
+
+Respond ONLY with the JSON array:`}function ut(e){return`You are a charisma coach. Rewrite this bland text message into 3 sharper, confident, flirty versions.
+Max 12 words each.
+Bland text: "${e}"
+
+Output ONLY a JSON array with objects: [{"vibe": "Smooth", "line": "..."}, {"vibe": "Tease", "line": "..."}, {"vibe": "Bold", "line": "..."}]`}const be={"com.snapchat.android":"Snapchat","org.telegram.messenger":"Telegram","org.thoughtcrime.securesms":"Signal","co.hinge.app":"Hinge","com.bumble.app":"Bumble","com.tinder":"Tinder","com.instagram.android":"Instagram","com.whatsapp":"WhatsApp","web.whatsapp.com":"WhatsApp Web","instagram.com":"Instagram DM","web.telegram.org":"Telegram Web","tinder.com":"Tinder Web","bumble.com":"Bumble Web","discord.com":"Discord","x.com":"X DM"};function Ee(e){if(!e)return;const t=e.replace(/^www\./i,"");if(be[t])return be[t];const n=t.split("."),o=n[n.length-1];if(!o||["android","app","messenger","com","org","io"].includes(o)){const r=n[n.length-2];return r?r.charAt(0).toUpperCase()+r.slice(1):void 0}return o.charAt(0).toUpperCase()+o.slice(1)}function dt(e){const t=Ee(e.appPackage);switch(e.source){case"screenshot":return"📸 Screenshot";case"notification":return t?`🔔 ${t} Msg`:"🔔 Incoming Msg";case"clipboard":return"📋 Copied Bubble";case"accessibility":return t?`👁️ ${t} Scan`:"👁️ Screen Scan";case"selection":return"✨ Selected Text";case"dom":return t?`🌐 ${t} Chat`:"🌐 Web Chat";case"manual":return"💬 Stealth Context"}}function ht(e){const t=e.partnerText.length>26?`${e.partnerText.slice(0,26).trim()}…`:e.partnerText;switch(e.source){case"screenshot":return"📸 Screenshot Detected: Analyze Next Move";case"notification":{const n=Ee(e.appPackage);return n?`🔔 ${n}: "${t}" — Reply`:`🔔 New Msg: "${t}" — Reply`}case"clipboard":return`📋 Copied: "${t}" — Reply`;case"accessibility":case"dom":return`👁️ Scanned: "${t}" — Reply`;case"selection":return`✨ Selected: "${t}" — Reply`;case"manual":return"💬 Context Ready — View Replies"}}class pt{constructor(){this.recentSelfCommits=new Set}recordSelfCommit(t){const n=this.normalize(t);if(n&&(this.recentSelfCommits.add(n),this.recentSelfCommits.size>25)){const o=this.recentSelfCommits.values().next().value;o&&this.recentSelfCommits.delete(o)}}isIgnored(t,n){const o=t.trim();if(!o)return!0;if(n==="manual"||n==="selection")return!1;const r=this.normalize(o);return!!(this.recentSelfCommits.has(r)||/^https?:\/\/\S+$/i.test(o)||/^\d{4,8}$/.test(o))}normalize(t){return t.toLowerCase().replace(/\s+/g," ").trim()}}function mt(e){const t={rawBlocks:e.map(o=>o.text)};if(e.length===0)return t;const n=e.filter(o=>{const r=o.y<120,a=o.y>o.screenWidth*1.8;return!r&&!a});n.sort((o,r)=>o.y-r.y);for(let o=n.length-1;o>=0;o--){const r=n[o],a=r.x+r.width/2>r.screenWidth/2;if(!a&&!t.senderText?t.senderText=r.text:a&&!t.myLastText&&(t.myLastText=r.text),t.senderText&&t.myLastText)break}return t}const ft=[{id:"op-1",category:"opener",vibe:"playful",triggerKeywords:["travel","hiking","nature"],template:"Are you as adventurous as your profile says, or do you also get lost in grocery stores?"},{id:"op-2",category:"opener",vibe:"smooth",triggerKeywords:["smile","eyes","cute"],template:"I was going to wait two days to message you, but patience was never my strong suit."},{id:"op-3",category:"opener",vibe:"witty",triggerKeywords:["food","coffee","cooking"],template:"Important question: what is your most controversial culinary opinion?"},{id:"bt-1",category:"banter",vibe:"playful",triggerKeywords:["trouble","sarcasm","bad"],template:"Are you always this much trouble or did I catch you on a good day?"},{id:"bt-2",category:"banter",vibe:"witty",triggerKeywords:["challenge","bet","win"],template:"Careful, high expectations are my only weakness."},{id:"bt-3",category:"banter",vibe:"bold",triggerKeywords:["rules","late","fast"],template:"I would say you are five minutes away from being my favorite person."},{id:"wp-1",category:"wordplay",vibe:"witty",triggerKeywords:["smart","books","study","work"],template:"Are you an overdue library book? Because you have fine written all over you."},{id:"wp-2",category:"wordplay",vibe:"smooth",triggerKeywords:["music","song","playlist"],template:"If our conversation was a playlist, I would have it on repeat."},{id:"cl-1",category:"closer",vibe:"bold",triggerKeywords:["drinks","date","weekend","meet","free","tonight"],template:"Drinks this Thursday. You pick the spot, I will bring the conversation."},{id:"cl-2",category:"closer",vibe:"smooth",triggerKeywords:["coffee","tea","afternoon","sunday","morning"],template:"Let us see if you are as fun in person. Coffee tomorrow?"},{id:"rf-1",category:"banter",vibe:"playful",triggerKeywords:["red flag","toxic","flaw","worst"],template:"My biggest red flag is thinking I can win every staring contest."},{id:"sn-1",category:"banter",vibe:"bold",triggerKeywords:["snap","streak","vanish","secret","disappear"],template:"Disappearing messages just mean we have to make every line count."},{id:"wy-1",category:"banter",vibe:"witty",triggerKeywords:["wyd","doing","bored","up to","plans"],template:"Plotting my next move, and you just walked right into it."},{id:"pt-1",category:"opener",vibe:"playful",triggerKeywords:["dog","puppy","cat","pet","gym","workout"],template:"Be honest: am I competing with your pet for attention, or do I stand a chance?"}];function yt(e,t=3){const n=e.toLowerCase();if(!n.trim())return[];const o=ft.map(r=>{let a=0;for(const i of r.triggerKeywords)n.includes(i)&&(a+=2);return{entry:r,score:a}}).filter(r=>r.score>0);return o.sort((r,a)=>a.score-r.score),o.slice(0,t).map(r=>r.entry)}function gt(e){const t=new Set(["the","and","for","are","you","that","this","with","have","what","when","where","why","how","just","like","really","very","about","from","they","them","your","mine","been","were","was","will","would","could","should","going","doing","want","need","know","think","today","tonight","tomorrow","lol","haha","lmao","yeah","yep","nope","okay","hey","hii","hello"]),n=e.toLowerCase().replace(/[^a-z0-9\s]/g," ").split(/\s+/).filter(o=>o.length>=4&&!t.has(o));return n.length>0?n[n.length-1]:null}class Oe{generateOfflineSuggestions(t,n){const o=t.trim(),r=o.toLowerCase(),a=yt(o,3),i={};for(const w of a)w.vibe==="smooth"&&!i.Smooth?i.Smooth=w.template:(w.vibe==="playful"||w.vibe==="witty")&&!i.Tease?i.Tease=w.template:w.vibe==="bold"&&!i.Bold&&(i.Bold=w.template);for(const w of a)!i.Smooth&&w.template!==i.Tease&&w.template!==i.Bold?i.Smooth=w.template:!i.Tease&&w.template!==i.Smooth&&w.template!==i.Bold?i.Tease=w.template:!i.Bold&&w.template!==i.Smooth&&w.template!==i.Tease&&(i.Bold=w.template);const c=gt(o),d=o.includes("?")||/^(what|why|how|where|when|who|are|do|did|would|can|wanna)\b/i.test(o),y=o.length>0&&o.split(/\s+/).length<=2&&!d,b=/^(hey|hi|hello|yo|sup|heyy+|hii+|gm|good morning)\b/i.test(r),u=/\b(sorry|my bad|apologize|late|missed)\b/i.test(r),p=/\b(cute|hot|pretty|handsome|smart|funny|sweet|love your|like your)\b/i.test(r);let s,g,P;return b?(s="Was literally just thinking about texting you—great timing.",g="Look who finally decided to grace my notifications.",P="Hey—skipping the small talk, how is your week looking?"):u?(s="All good, life happens. Just glad you are here now.",g="You owe me a coffee for the suspense, then we are even.",P="Apology accepted—make it up to me this weekend?"):p?(s="Careful, keep talking like that and I might actually blush.",g="Flattery will get you everywhere—what else you got?",P="Say that again in person over drinks."):d&&c?(s=`Honestly, ${c} is a whole story—I will tell you the good part.`,g=`Depends—are you asking about ${c} out of curiosity or research?`,P=`Better ${c} story in person. Are you free Thursday?`):d?(s="Careful, the honest answer might make you like me more.",g="I plead the fifth—unless you are buying the first round.",P="Better story in person. When are we hanging out?"):y?(s="A person of few words—good thing I speak fluent mystery.",g="Do not hurt your thumbs typing a whole novel over there.",P="Tell me what you are actually up to right now."):c?(s=`Okay, ${c} actually sounds like my kind of vibe.`,g=`Wait, you cannot just drop "${c}" and not elaborate.`,P=`We definitely need to talk more about ${c}—coffee this week?`):r.includes("haha")||r.includes("lol")||r.includes("lmao")?(s="Making you laugh this early is dangerous for both of us.",g="Glad I could entertain you—my rates go up after midnight.",P="Wait until you hear my actual voice—call later?"):(s="I was going to play it cool, but you made that impossible.",g="Are you always this much trouble or is today special?",P="Skip the small talk: what is your go-to spot for drinks?"),[{vibe:"Smooth",line:i.Smooth??s},{vibe:"Tease",line:i.Tease??g},{vibe:"Bold",line:i.Bold??P}]}async generateOnlineSuggestions(t,n){var i,c,d;const o=this.generateOfflineSuggestions(t,n);if(typeof fetch!="function")return o;const r=new AbortController,a=setTimeout(()=>r.abort(),4e3);try{const y=`${ve(t,n)}
+Return ONLY a JSON array of 3 objects: [{"vibe":"Smooth","line":"..."},{"vibe":"Tease","line":"..."},{"vibe":"Bold","line":"..."}]`,b=await fetch("https://text.pollinations.ai/",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({messages:[{role:"system",content:"You are a concise, witty dating/chat assistant. Reply ONLY with valid JSON."},{role:"user",content:y}],model:"openai"}),signal:r.signal});if(clearTimeout(a),!b.ok)return o;const p=(await b.text()).match(/\[[\s\S]*\]/);if(!p)return o;const s=JSON.parse(p[0]);return!Array.isArray(s)||s.length<3?o:[{vibe:"Smooth",line:String(((i=s[0])==null?void 0:i.line)||o[0].line)},{vibe:"Tease",line:String(((c=s[1])==null?void 0:c.line)||o[1].line)},{vibe:"Bold",line:String(((d=s[2])==null?void 0:d.line)||o[2].line)}]}catch{return clearTimeout(a),o}}getPromptForChat(t,n){return ve(t,n)}getPromptForRewrite(t){return ut(t)}}class vt{constructor(){this.engine=new Oe,this.filter=new pt,this.lastProcessedSignature=""}recordCommittedReply(t){this.filter.recordSelfCommit(t)}isIgnoredNoiseOrSelf(t,n){return this.filter.isIgnored(t,n)}ingestRawContext(t){var a,i;const n=t.text.replace(/\s+/g," ").trim();if(this.filter.isIgnored(n,t.source))return null;const o=`${t.source}:${t.appPackage??""}:${this.filter.normalize(n)}`;if(t.source!=="manual"&&t.source!=="selection"&&o===this.lastProcessedSignature)return null;this.lastProcessedSignature=o;const r=t.timestamp??Date.now();return{id:`${t.source}-${r}`,source:t.source,partnerText:n,myLastText:((a=t.myLastText)==null?void 0:a.trim())||void 0,senderName:((i=t.senderName)==null?void 0:i.trim())||void 0,appPackage:t.appPackage,uri:t.uri,timestamp:r}}ingestScreenBlocks(t,n,o){var i;if(!t||t.length===0)return null;const r=mt(t),a=r.senderText??r.rawBlocks.find(c=>!this.filter.isIgnored(c,n));return a?{id:`${n}-${(o==null?void 0:o.timestamp)??Date.now()}`,source:n,partnerText:a.trim(),myLastText:(i=r.myLastText)==null?void 0:i.trim(),appPackage:o==null?void 0:o.appPackage,uri:o==null?void 0:o.uri,timestamp:(o==null?void 0:o.timestamp)??Date.now()}:null}resolveSuggestions(t){const n=this.engine.generateOfflineSuggestions(t.partnerText,t.myLastText);return{context:t,suggestions:n}}}const we={i:"I",im:"I'm",ive:"I've",ill:"I'll",id:"I'd",dont:"don't",cant:"can't",wont:"won't",didnt:"didn't",doesnt:"doesn't",isnt:"isn't",arent:"aren't",wasnt:"wasn't",werent:"weren't",havent:"haven't",hasnt:"hasn't",hadnt:"hadn't",wouldnt:"wouldn't",couldnt:"couldn't",shouldnt:"shouldn't",youre:"you're",youve:"you've",youll:"you'll",theyre:"they're",thats:"that's",whats:"what's",heres:"here's",theres:"there's",wheres:"where's",lets:"let's",teh:"the",hte:"the",adn:"and",nad:"and",taht:"that",waht:"what",whta:"what",hwat:"what",wiht:"with",wtih:"with",jsut:"just",jstu:"just",liek:"like",lke:"like",realy:"really",relly:"really",definately:"definitely",definetly:"definitely",seperate:"separate",recieve:"receive",occured:"occurred",untill:"until",tommorow:"tomorrow",tomorow:"tomorrow",tonite:"tonight",becuase:"because",beacuse:"because",freind:"friend",frend:"friend",prolly:"probably",probly:"probably",thx:"thanks",ty:"thank you",pls:"please",plz:"please",sry:"sorry",srry:"sorry",msg:"message",bday:"birthday",wknd:"weekend",tmrw:"tomorrow"};class bt{constructor(){this.root={children:new Map,isWord:!1,frequency:0},this.bigrams=new Map,this.dictionaryWords=new Set,this.personalWords=new Set,this.seedCommonVocabulary()}insert(t,n=1){let o=this.root;const r=t.toLowerCase();for(const a of r)o.children.has(a)||o.children.set(a,{children:new Map,isWord:!1,frequency:0}),o=o.children.get(a);o.isWord=!0,o.frequency+=n,this.dictionaryWords.add(r)}learnWord(t){const n=t.trim().replace(/[^a-zA-Z']/g,"");n.length<2||(this.insert(n,25),this.personalWords.add(n.toLowerCase()))}getPersonalDictionary(){return Array.from(this.personalWords).sort()}hasWord(t){return this.dictionaryWords.has(t.toLowerCase())}autocorrect(t){const n=t.trim();if(!n||n.length<1)return null;const o=n.toLowerCase();if(we[o]){const i=we[o];return n[0]===n[0].toUpperCase()&&i[0]!==i[0].toUpperCase()?i[0].toUpperCase()+i.slice(1):i}if(this.dictionaryWords.has(o)||o.length<3)return null;let r=null,a=0;for(const i of this.dictionaryWords)if(!(Math.abs(i.length-o.length)>1)&&this.levenshtein(o,i)===1){const c=this.getWordFrequency(i);c>a&&(a=c,r=i)}return r?n[0]===n[0].toUpperCase()?r[0].toUpperCase()+r.slice(1):r:null}getWordFrequency(t){let n=this.root;for(const o of t.toLowerCase()){const r=n.children.get(o);if(!r)return 0;n=r}return n.isWord?n.frequency:0}levenshtein(t,n){const o=t.length,r=n.length,a=Array.from({length:r+1},(i,c)=>c);for(let i=1;i<=o;i++){let c=a[0];a[0]=i;for(let d=1;d<=r;d++){const y=a[d];t[i-1]===n[d-1]?a[d]=c:a[d]=1+Math.min(c,a[d],a[d-1]),c=y}}return a[r]}addBigram(t,n){const o=t.toLowerCase(),r=n.toLowerCase();let a=this.bigrams.get(o);a||(a=[],this.bigrams.set(o,a));const i=a.find(c=>c.word===r);i?i.count++:a.push({word:r,count:1}),a.sort((c,d)=>d.count-c.count)}completePrefix(t,n=3){if(!t)return[];let o=this.root;const r=t.toLowerCase();for(const i of r){if(!o.children.has(i))return[];o=o.children.get(i)}const a=[];return this.collectWords(o,r,a),a.sort((i,c)=>c.frequency-i.frequency),a.slice(0,n).map(i=>i.word)}predictNextWord(t,n=3){if(!t)return["the","you","I"];const o=t.toLowerCase(),r=this.bigrams.get(o);return r&&r.length>0?r.slice(0,n).map(a=>a.word):["and","to","you"]}collectWords(t,n,o){t.isWord&&o.push({word:n,frequency:t.frequency});for(const[r,a]of t.children.entries())this.collectWords(a,n+r,o)}seedCommonVocabulary(){const t=[["the",200],["be",180],["to",180],["of",175],["and",175],["a",170],["in",165],["that",160],["have",155],["it",155],["for",150],["not",145],["on",145],["with",140],["he",135],["as",135],["you",190],["do",130],["at",130],["this",130],["but",125],["his",120],["by",120],["from",120],["they",120],["we",125],["say",115],["her",115],["she",115],["or",115],["an",115],["will",120],["my",130],["one",115],["all",115],["would",115],["there",115],["their",110],["what",140],["so",125],["up",110],["out",110],["if",115],["about",120],["who",110],["get",115],["which",105],["go",115],["me",125],["when",120],["make",110],["can",125],["like",130],["time",115],["no",115],["just",125],["him",105],["know",120],["take",105],["people",100],["into",100],["year",95],["your",130],["good",125],["some",105],["could",105],["them",105],["see",115],["other",100],["than",100],["then",105],["now",115],["look",105],["only",105],["come",105],["its",100],["over",100],["think",110],["also",100],["back",105],["after",100],["use",100],["two",95],["how",135],["our",105],["work",105],["first",100],["well",110],["way",105],["even",100],["new",100],["want",115],["because",105],["any",100],["these",95],["give",95],["day",105],["most",95],["us",100],["are",150],["was",130],["were",110],["been",105],["has",110],["had",110],["free",110],["tonight",105],["tomorrow",100],["weekend",110],["coffee",95],["drinks",95],["dinner",95],["lunch",90],["plans",95],["sounds",105],["love",120],["talking",90],["where",115],["why",110],["going",115],["great",115],["amazing",95],["awesome",95],["cool",100],["nice",105],["sorry",100],["thanks",105],["please",105],["maybe",95],["definitely",90],["probably",90],["actually",95],["really",115],["very",110],["morning",95],["night",105],["today",105],["soon",95],["later",95],["ready",90],["busy",90],["happy",95],["excited",90],["miss",95],["wait",95],["meet",95]];for(const[o,r]of t)this.insert(o,r);const n=[["how","are"],["how","is"],["how","was"],["are","you"],["are","we"],["are","they"],["you","free"],["you","doing"],["you","up"],["what","are"],["what","is"],["what","do"],["want","to"],["going","to"],["have","to"],["good","morning"],["good","night"],["good","idea"],["sounds","good"],["sounds","great"],["sounds","fun"],["see","you"],["talk","to"],["let","me"],["on","my"],["my","way"],["this","weekend"]];for(const[o,r]of n)this.addBigram(o,r)}}function wt(e){const t=e.trim(),n=t.toLowerCase();return t?/^(hey|hi|hello|sup|yo|wyd|what'?s up)$/i.test(t)?{score:2,verdict:"Dry",feedback:"Low effort opener. High ghosting probability (~90%).",improved:"Important question: what is your most controversial food opinion?"}:n.includes("how are you")||n.includes("how was your day")?{score:4,verdict:"Safe",feedback:"Polite but sounds like an HR interview.",improved:"Tell me your day was more exciting than grocery shopping."}:n.includes("cutie")||n.includes("beautiful")||n.includes("gorgeous")?{score:5,verdict:"Safe",feedback:"Compliment is sweet, but every other match says the exact same thing.",improved:"I was going to play it cool, but you made that impossible."}:n.includes("trouble")||n.includes("bet")||n.includes("drinks")||n.includes("coffee")?{score:9,verdict:"Smooth",feedback:"High energy, playful intrigue. Ready to send.",improved:t}:{score:7,verdict:"Smooth",feedback:"Solid message. Could use 10% more cheekiness.",improved:`${t} — unless you scare easily.`}:{score:1,verdict:"Dry",feedback:"Empty canvas. Drop something bold.",improved:"Are we breaking records or rules tonight?"}}const U=[{name:"Smileys & Rizz",icon:"😏",emojis:["😏","😉","😎","😜","😝","😛","🥳","🤩","😍","🥰","😘","😗","😙","😚","🤗","🤭","🤫","🫠","🫡","🤔","🤨","😐","😑","😶","🙄","😬","😌","😔","😪","😴","😂","🤣","😭","😅","😆","😁","😄","😃","😀","🙂","😈","👿","🫦","💅","👀","✨","🔥","💀","🤡","🥺"]},{name:"Love & Hearts",icon:"❤️",emojis:["❤️","❤️‍🔥","❤️‍🩹","🧡","💛","💚","💙","💜","🖤","🤍","🤎","💖","💗","💓","💞","💕","💘","💝","💟","❣️","💔","💋","💌","💍","💎","🌹","🥀","💐","🌷","🌸","🥂","🍾","🍫","🍓","🍒","🫶","🫰","💑","👩‍❤️‍👨","💏"]},{name:"Gestures & Reactions",icon:"✌️",emojis:["👍","👎","👌","🤌","🤏","✌️","🤞","🫰","🤟","🤘","🤙","👈","👉","👆","👇","☝️","✋","🤚","🖐️","🖖","👋","🤝","🙏","👏","🙌","👐","🤲","✊","👊","🤛","🤜","💪","🦾","🫶","🤦‍♂️","🤦‍♀️","🤷‍♂️","🤷‍♀️","💯","🎯"]},{name:"People & Vibes",icon:"🕺",emojis:["🕺","💃","👯","🧘","🏄","🚴","🏋️","🤸","🥷","🕵️","👑","🎩","🕶️","👓","🧣","👗","👔","👟","👠","👜","🧠","🫀","👁️","👅","👄","👂","👃","🫂","🗣️","👤"]},{name:"Food & Dates",icon:"☕",emojis:["☕","🍵","🧋","🥤","🍺","🍻","🥂","🍷","🥃","🍸","🍹","🍾","🍕","🍔","🍟","🌭","🌮","🌯","🍣","🍜","🍝","🍛","🍱","🥟","🍤","🍦","🍨","🍩","🍪","🎂","🍰","🧁","🍫","🍿","🥐","🥯","🥞","🧇","🥓","🍳"]},{name:"Activities & Travel",icon:"✈️",emojis:["✈️","🚗","🏎️","🚕","🚌","🚆","🚀","🛸","⛵","🏖️","🏝️","🏔️","🏕️","🌅","🌄","🌃","🌆","🎡","🎢","🎬","🎤","🎧","🎼","🎹","🎸","🥁","🎮","🕹️","🎲","♟️","🎳","🎯","⚽","🏀","🏈","⚾","🎾","🏐","🏆","🥇"]},{name:"Symbols & Tech",icon:"⚡",emojis:["⚡","⭐","🌟","💫","✨","💥","💢","💦","💨","💤","💬","💭","🗯️","🔔","🔕","🔒","🔓","🔑","📱","💻","⌨️","📷","📸","🎥","📺","📻","⏰","⏳","💡","🔋","✅","❌","❓","❗","‼️","⁉️","⚠️","🚫","♻️","♾️"]}];function l(e){const{fragment:t}=ce(e);if(t.childElementCount===1&&t.firstElementChild)return t.firstElementChild;const n=document.createElement("div");return n.style.display="contents",n.appendChild(t),n}function I(e,t){const n=document.createElement("div");n.className=e;for(const o of t){const{fragment:r}=ce(o);n.appendChild(r)}return n}function M(e,t=18){return h`<svg width=${t} height=${t} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d=${e}/></svg>`}const S={mic:()=>M("M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z M19 10v2a7 7 0 0 1-14 0v-2 M12 19v4 M8 23h8"),scan:()=>M("M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"),chat:()=>M("M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"),flame:()=>M("M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"),clipboard:()=>M("M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2 M9 2h6v4H9z"),emoji:()=>M("M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z M8 14s1.5 2 4 2 4-2 4-2 M9 9h.01 M15 9h.01"),edit:()=>M("M12 20h9 M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"),help:()=>M("M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3 M12 17h.01"),theme:()=>M("M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"),oneHanded:()=>M("M18 11V6a2 2 0 0 0-2-2 2 2 0 0 0-2 2 M14 10V4a2 2 0 0 0-2-2 2 2 0 0 0-2 2v2 M10 10.5V6a2 2 0 0 0-2-2 2 2 0 0 0-2 2v8 M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"),numbers:()=>M("M4 9h16 M4 15h16 M10 3L8 21 M16 3l-2 18"),globe:()=>M("M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z M2 12h20 M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"),talks:()=>M("M4 19.5A2.5 2.5 0 0 1 6.5 17H20 M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"),height:()=>M("M12 3v18 M8 7l4-4 4 4 M8 17l4 4 4-4")};function kt(e){return l(h`
+    <div class="action-bar">
+      ${()=>e.activeContext.value?l(h`
+            <button class="action-pill highlight" @click=${e.onOpenContextReplies}>
+              ${ht(e.activeContext.value)}
+            </button>
+          `):""}
+      <button class="action-pill" @click=${e.onVoiceInput} title="Google Voice Typing">
+        ${l(S.mic())}
+      </button>
+      <button class="action-pill" @click=${e.onScanScreen} title="Scan Screen">
+        ${l(S.scan())}
+      </button>
+      <button
+        class=${()=>e.stealthMode.value?"action-pill active-mode":"action-pill"}
+        @click=${e.onToggleStealth}
+        title="Tell Rizz">
+        ${l(S.chat())}
+      </button>
+      <button class="action-pill" @click=${e.onToggleRoast} title="Roast Draft">
+        ${l(S.flame())}
+      </button>
+      <button class="action-pill" @click=${e.onToggleClipboard} title="Clipboard">
+        ${l(S.clipboard())}
+      </button>
+      <button class="action-pill" @click=${e.onToggleEmojis} title="Emojis">
+        ${l(S.emoji())}
+      </button>
+      <button class="action-pill" @click=${e.onToggleTextEdit} title="Text Editing">
+        ${l(S.edit())}
+      </button>
+      <button class="action-pill" @click=${e.onToggleHelp} title="Help & Gestures">
+        ${l(S.help())}
+      </button>
+      <button class="action-pill" @click=${e.onCycleTheme} title="Switch Theme">
+        ${l(S.theme())}
+      </button>
+      <button class="action-pill" @click=${e.onToggleOneHanded} title="One-Handed Mode">
+        ${l(S.oneHanded())}
+      </button>
+      <button class="action-pill" @click=${e.onToggleNumberRow} title="Number Row">
+        ${l(S.numbers())}
+      </button>
+      <button class="action-pill" @click=${e.onToggleTalks} title="Rizz Talks">
+        ${l(S.talks())}
+      </button>
+      <button class="action-pill" @click=${e.onCycleHeight} title="Keyboard Height">
+        ${l(S.height())}
+      </button>
+      <button class="action-pill" @click=${e.onSwitchKeyboard} title="Switch Keyboard">
+        ${l(S.globe())}
+      </button>
+    </div>
+  `)}function Ct(e){return l(h`
+    <div class="stealth-bar">
+      <div class="stealth-top">
+        <span class="stealth-badge">🛡️ STEALTH MODE · Hidden from chat</span>
+        <div class="stealth-actions">
+          ${()=>e.showEnableScanner.value?l(h`
+                <button class="stealth-link" @click=${e.onEnableScanner}>
+                  Enable Scanner ⚙
+                </button>
+              `):""}
+          <button class="back-link" @click=${e.onCancel}>Cancel ✕</button>
+        </div>
+      </div>
+      <div class="stealth-input-row">
+        <div class="stealth-preview">
+          ${()=>e.buffer.value?e.buffer.value:e.hint.value??'Type what they said or asked (e.g. "asked my red flag")…'}
+        </div>
+        <button class="stealth-go-btn" @click=${e.onGenerate}>
+          ⚡ Replies
+        </button>
+      </div>
+    </div>
+  `)}function St(e){return l(h`
+    <div class="suggestions-shell">
+      ${()=>I("suggestions-panel",e.suggestions.value.map(t=>h`
+          <div class="suggestion-card" @click=${()=>e.onSelectSuggestion(t)}>
+            <span class="suggestion-text">${t}</span>
+          </div>
+        `))}
+    </div>
+  `)}const $t={q:"1",w:"2",e:"3",r:"4",t:"5",y:"6",u:"7",i:"8",o:"9",p:"0",a:"@",s:"#",d:"$",f:"%",g:"&",h:"-",j:"+",k:"(",l:")",z:"*",x:'"',c:"'",v:":",b:";",n:"!",m:"?"};function xt(e){const t=k("off"),n=k("alpha"),o=ALPHA_ROW_1,r=ALPHA_ROW_2,a=ALPHA_ROW_3,i=NUM_ROW_1,c=NUM_ROW_2,d=NUM_ROW_3,y=SYM_ROW_1,b=SYM_ROW_2,u=SYM_ROW_3,p=C=>{const _=t.value!=="off"?C.toUpperCase():C;e.onKeyPress(_),t.value==="once"&&(t.value="off")},s=()=>{t.value==="off"?t.value="once":t.value==="once"?t.value="caps":t.value="off"},g=(C,z)=>{const _=z?C.toUpperCase():C,R=$t[C]??"";let v=null,$=!1;const de=()=>{$=!1,R&&(v=setTimeout(()=>{$=!0,e.onKeyPress(R)},380))},Q=()=>{v&&(clearTimeout(v),v=null)};return h`
+      <button
+        class="key-btn"
+        @pointerdown=${de}
+        @pointerup=${Q}
+        @pointerleave=${Q}
+        @pointercancel=${Q}
+        @click=${()=>{v&&(clearTimeout(v),v=null),$||p(C),$=!1}}>
+        ${_}
+      </button>
+    `},P=()=>{let C=null,z=null,_=!1,R=0;const v=()=>{C&&(clearTimeout(C),C=null),z&&(clearInterval(z),z=null)};return h`
+      <button
+        class="key-btn special"
+        @pointerdown=${ee=>{R=ee.clientX,_=!1,v(),C=setTimeout(()=>{_=!0,e.onBackspace(),z=setInterval(()=>{e.onBackspace()},55)},350)}}
+        @pointermove=${ee=>{var he;R-ee.clientX>=28&&!_&&(_=!0,v(),(he=e.onDeleteWord)==null||he.call(e))}}
+        @pointerup=${v}
+        @pointerleave=${v}
+        @pointercancel=${v}
+        @click=${()=>{v(),_||e.onBackspace(),_=!1}}>
+        ⌫
+      </button>
+    `},w=()=>{const C=t.value!=="off",z=t.value==="caps"?"⇪":t.value==="once"?"⬆":"⇧",_=t.value==="off"?"key-btn special":"key-btn special active-shift",R=document.createElement("div");R.className="keyboard-row",R.appendChild(l(h`<button class=${_} @click=${s}>${z}</button>`));for(const v of a)R.appendChild(l(g(v,C)));return R.appendChild(l(P())),l(h`
+      <div class="keyboard-grid">
+        ${()=>{var v;return(v=e.showNumberRow)!=null&&v.value?I("keyboard-row",i.map($=>h`<button class="key-btn" @click=${()=>e.onKeyPress($)}>${$}</button>`)):""}}
+        ${I("keyboard-row",o.map(v=>g(v,C)))}
+        ${I("keyboard-row",r.map(v=>g(v,C)))}
+        ${R}
+        <div class="keyboard-row">
+          <button class="key-btn special" @click=${()=>n.value="numbers"}>123</button>
+          <button class="key-btn special" @click=${e.onOpenEmojis}>😏</button>
+          <button class="key-btn special" @click=${()=>e.onKeyPress(",")}>,</button>
+          <button class="key-btn space" @click=${()=>e.onKeyPress(" ")}>
+            ${()=>e.stealthMode.value?"stealth space":"space"}
+          </button>
+          <button class="key-btn special" @click=${()=>e.onKeyPress(".")}>.</button>
+          <button class="key-btn send" @click=${e.onSend}>
+            ${()=>e.stealthMode.value?"Ask ⚡":"Send"}
+          </button>
+        </div>
+      </div>
+    `)},ue=C=>{const z=C?y:i,_=C?b:c,R=C?u:d,v=document.createElement("div");v.className="keyboard-row",v.appendChild(l(h`
+        <button
+          class="key-btn special"
+          @click=${()=>n.value=C?"numbers":"symbols"}>
+          ${C?"123":"=\\<"}
+        </button>
+      `));for(const $ of R)v.appendChild(l(h`<button class="key-btn" @click=${()=>e.onKeyPress($)}>${$}</button>`));return v.appendChild(l(P())),l(h`
+      <div class="keyboard-grid">
+        ${I("keyboard-row",z.map($=>h`<button class="key-btn" @click=${()=>e.onKeyPress($)}>${$}</button>`))}
+        ${I("keyboard-row",_.map($=>h`<button class="key-btn" @click=${()=>e.onKeyPress($)}>${$}</button>`))}
+        ${v}
+        <div class="keyboard-row">
+          <button class="key-btn special" @click=${()=>n.value="alpha"}>ABC</button>
+          <button class="key-btn special" @click=${e.onOpenEmojis}>😏</button>
+          <button class="key-btn special" @click=${()=>e.onKeyPress(",")}>,</button>
+          <button class="key-btn space" @click=${()=>e.onKeyPress(" ")}>
+            ${()=>e.stealthMode.value?"stealth space":"space"}
+          </button>
+          <button class="key-btn special" @click=${()=>e.onKeyPress(".")}>.</button>
+          <button class="key-btn send" @click=${e.onSend}>
+            ${()=>e.stealthMode.value?"Ask ⚡":"Send"}
+          </button>
+        </div>
+      </div>
+    `)};return l(h`
+    <div class="keyboard-grid-wrapper">
+      ${()=>n.value==="numbers"?ue(!1):n.value==="symbols"?ue(!0):w()}
+    </div>
+  `)}const ze="rizzboard_recent_emojis";function le(){try{const e=localStorage.getItem(ze);if(!e)return["😏","🔥","❤️","😂","✨","👀","💯","🥂"];const t=JSON.parse(e);return Array.isArray(t)&&t.length>0?t:["😏","🔥","❤️","😂"]}catch{return["😏","🔥","❤️","😂"]}}function Tt(e){try{const t=le().filter(o=>o!==e),n=[e,...t].slice(0,16);localStorage.setItem(ze,JSON.stringify(n))}catch{}}function Pt(e){const t=k(0),n=k(""),o=k(le()),r=i=>{Tt(i),o.value=le(),e.onSelectEmoji(i)},a=document.createElement("div");return a.className="emoji-tabs",a.appendChild(l(h`
+      <button
+        class=${()=>t.value===0?"emoji-tab active":"emoji-tab"}
+        @click=${()=>{n.value="",t.value=0}}>
+        🕒
+      </button>
+    `)),U.forEach((i,c)=>{const d=c+1;a.appendChild(l(h`
+        <button
+          class=${()=>d===t.value?"emoji-tab active":"emoji-tab"}
+          @click=${()=>{n.value="",t.value=d}}>
+          ${i.icon}
+        </button>
+      `))}),a.appendChild(l(h`<button class="emoji-tab back-key" @click=${e.onClose}>ABC</button>`)),l(h`
+    <div class="emoji-view">
+      <div class="emoji-search-bar" style="padding: 4px 8px;">
+        <input
+          type="text"
+          class="stealth-input"
+          placeholder="Search emojis (e.g. love, food, fire, gesture)..."
+          .value=${()=>n.value}
+          @input=${i=>{n.value=i.target.value}}
+          style="width: 100%; padding: 6px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.12); background: rgba(0,0,0,0.25); color: inherit; font-size: 13px;"
+        />
+      </div>
+      ${a}
+      ${()=>{const i=n.value.trim().toLowerCase();let c;if(i){const d=U.filter(y=>y.name.toLowerCase().includes(i));c=d.length>0?d.flatMap(y=>y.emojis):U.flatMap(y=>y.emojis)}else t.value===0?c=o.value:c=(U[t.value-1]??U[0]).emojis;return I("emoji-grid",c.map(d=>h`
+            <button class="emoji-btn" @click=${()=>r(d)}>${d}</button>
+          `))}}
+    </div>
+  `)}function At(e){const t=k([]),n=o=>{t.value.includes(o)?t.value=t.value.filter(r=>r!==o):t.value=[o,...t.value]};return l(h`
+    <div class="clipboard-view">
+      <div class="clipboard-header">
+        <span>Clipboard — Tap to Paste or ⚡ Reply</span>
+        <div style="display:flex; gap:8px; align-items:center;">
+          ${e.onClearAll?l(h`<button class="back-link" @click=${e.onClearAll}>Clear</button>`):""}
+          <button class="back-link" @click=${e.onClose}>Close ✕</button>
+        </div>
+      </div>
+      ${()=>{const o=t.value,r=[...e.history.value.filter(a=>o.includes(a)),...e.history.value.filter(a=>!o.includes(a))];return r.length===0?l(h`
+            <div style="padding: 20px; text-align: center; opacity: 0.6; font-size: 13px;">
+              Clipboard is empty. Copy any message to see it here.
+            </div>
+          `):I("clipboard-list",r.map(a=>{const i=o.includes(a);return h`
+              <div class="clipboard-item-row">
+                <div class="clipboard-item" @click=${()=>e.onSelectClip(a)}>
+                  ${i?"📌 ":""}${a}
+                </div>
+                <button
+                  class="clip-analyze-btn"
+                  @click=${()=>n(a)}
+                  title=${i?"Unpin":"Pin"}>
+                  ${i?"📌":"📍"}
+                </button>
+                <button class="clip-analyze-btn" @click=${()=>e.onAnalyzeClip(a)}>
+                  ⚡
+                </button>
+                ${e.onDeleteClip?l(h`
+                      <button
+                        class="clip-analyze-btn"
+                        @click=${()=>e.onDeleteClip(a)}
+                        title="Delete">
+                        ✕
+                      </button>
+                    `):""}
+              </div>
+            `}))}}
+    </div>
+  `)}function Nt(e){return l(h`
+    <div class="roast-view">
+      <div class="roast-badge">
+        <span>Score: ${()=>e.roast.value?`${e.roast.value.score}/10 — ${e.roast.value.verdict}`:"Analyzing..."}</span>
+        <button class="back-link" @click=${e.onClose}>Back to typing ✕</button>
+      </div>
+      <p class="roast-feedback">"${()=>e.roast.value?e.roast.value.feedback:""}"</p>
+      <div class="roast-upgrade" @click=${()=>{e.roast.value&&e.onApplyUpgrade(e.roast.value.improved)}}>
+        <span class="upgrade-tag">1-Tap Upgrade:</span>
+        <span class="upgrade-line">${()=>e.roast.value?e.roast.value.improved:""}</span>
+      </div>
+    </div>
+  `)}function _t(e){return l(h`
+    <div class="nextmove-view">
+      <div class="nextmove-header">
+        <div class="nextmove-meta">
+          <span class="source-chip">
+            ${()=>e.resolution.value?dt(e.resolution.value.context):"⚡ Next Move"}
+          </span>
+          <span class="partner-quote">
+            "${()=>{var n;const t=((n=e.resolution.value)==null?void 0:n.context.partnerText)??"";return t.length>44?`${t.slice(0,44).trim()}…`:t}}"
+          </span>
+        </div>
+        <div class="nextmove-actions">
+          <button class="back-link" @click=${e.onSwitchToStealth}>Edit</button>
+          <button class="back-link" @click=${e.onClose}>Close ✕</button>
+        </div>
+      </div>
+
+      ${()=>{const t=e.resolution.value;return!t||t.suggestions.length===0?l(h`
+            <div class="roast-feedback">Tap "Tell Rizz" or "Scan Screen" to load chat context.</div>
+          `):I("nextmove-cards",t.suggestions.map(n=>h`
+            <div class="vibe-card" @click=${()=>e.onSelectReply(n.line)}>
+              <span class="vibe-tag vibe-${n.vibe.toLowerCase()}">${n.vibe}</span>
+              <span class="vibe-line">${n.line}</span>
+            </div>
+          `))}}
+    </div>
+  `)}function Mt(e){const t=o=>{f("click"),lt(o)},n=o=>{f("light"),ct(o)};return l(h`
+    <div class="clipboard-view" style="padding: 8px;">
+      <div class="clipboard-header">
+        <span>Text Editing & Cursor Pad</span>
+        <button class="back-link" @click=${e.onClose}>ABC ✕</button>
+      </div>
+      <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:6px; margin-bottom:8px;">
+        <button class="key-btn special" @click=${()=>t("selectAll")}>Select All</button>
+        <button class="key-btn special" @click=${()=>t("copy")}>Copy</button>
+        <button class="key-btn special" @click=${()=>t("cut")}>Cut</button>
+        <button class="key-btn special" @click=${()=>t("paste")}>Paste</button>
+      </div>
+      <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:6px; max-width: 240px; margin: 0 auto;">
+        <div></div>
+        <button class="key-btn" @click=${()=>n("up")}>▲</button>
+        <button class="key-btn special" @click=${e.onBackspace}>⌫</button>
+        <button class="key-btn" @click=${()=>n("left")}>◀</button>
+        <button class="key-btn" @click=${()=>n("down")}>▼</button>
+        <button class="key-btn" @click=${()=>n("right")}>▶</button>
+      </div>
+    </div>
+  `)}const Rt=[{icon:"✨",title:"Auto Chat Replies",desc:"Opens automatically when a chat is detected, or swipe up on Spacebar."},{icon:"🔢",title:"Long-Press Numbers & Symbols",desc:`Hold q–p for 1–0, or hold a–m for @ # $ % & - + ( ) * " ' : ; ! ?`},{icon:"⌫",title:"Swipe Left / Hold Backspace",desc:"Hold ⌫ to repeat-delete, or swipe left on ⌫ to delete a whole word."},{icon:"↔️",title:"Spacebar Cursor Scrub",desc:"Slide your finger left or right on Spacebar to move the cursor."},{icon:"🎙️",title:"Google Voice Typing",desc:"Tap Mic in the top bar for instant voice dictation."},{icon:"✂️",title:"Text Editing & D-Pad",desc:"Tap ✂️ for Select All, Copy, Cut, Paste, and arrow keys."},{icon:"📋",title:"Clipboard & Emoji Search",desc:"Pin/delete clips in 📋, or search 250+ emojis in 😏."}];function Et(e){return l(h`
+    <div class="help-view" style="padding: 8px; max-height: 220px; overflow-y: auto;">
+      <div class="clipboard-header" style="margin-bottom: 6px;">
+        <span>RizzBoard Gestures & Guide</span>
+        <div style="display:flex; gap:8px;">
+          <button class="back-link" @click=${()=>Re("setup")}>⚙ Setup</button>
+          <button class="back-link" @click=${e.onClose}>ABC ✕</button>
+        </div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        ${Rt.map(t=>h`
+          <div class="help-card">
+            <span style="font-size: 16px; min-width: 24px; text-align: center;">${t.icon}</span>
+            <div>
+              <div style="font-weight: 600; font-size: 12px;">${t.title}</div>
+              <div style="opacity: 0.72; font-size: 11px;">${t.desc}</div>
+            </div>
+          </div>
+        `)}
+      </div>
+    </div>
+  `)}const ae=[{name:"Icebreakers",lines:["Two truths and a lie—you go first.","What is the most spontaneous thing you have done this year?","Unpopular opinion: what food is wildly overrated?"]},{name:"Flirty",lines:["I was going to play it cool, but you made that impossible.","Careful, keep talking like that and I might actually like you.","Are you always this much trouble or is today special?"]},{name:"Date Pivots",lines:["This is fun, but I am way better in person. Coffee this week?","Skip the small talk—what is your go-to spot for drinks?","Are you free Thursday evening? I know a great place."]},{name:"Recovery",lines:["You are a person of few words—good thing I speak fluent mystery.","I will take that as a yes. What are you up to this weekend?","Do not hurt your thumbs typing a whole novel over there."]}];function Ot(e){const t=k(0);return l(h`
+    <div class="clipboard-view" style="padding: 8px;">
+      <div class="clipboard-header">
+        <span>Rizz Talks — Tap to Insert</span>
+        <button class="back-link" @click=${e.onClose}>ABC ✕</button>
+      </div>
+      <div class="emoji-tabs" style="margin-bottom: 6px;">
+        ${ae.map((n,o)=>h`
+          <button
+            class=${()=>o===t.value?"emoji-tab active":"emoji-tab"}
+            style="font-size: 11px; padding: 4px 8px;"
+            @click=${()=>t.value=o}>
+            ${n.name}
+          </button>
+        `)}
+      </div>
+      ${()=>{const n=ae[t.value]??ae[0];return I("clipboard-list",n.lines.map(o=>h`
+            <div class="clipboard-item-row">
+              <div class="clipboard-item" @click=${()=>e.onSelectLine(o)}>
+                ${o}
+              </div>
+            </div>
+          `))}}
+    </div>
+  `)}function zt(e){return l(h`
+    <div class="clipboard-view" style="padding: 8px;">
+      <div class="clipboard-header" style="margin-bottom: 8px;">
+        <span>Quick Settings</span>
+        <button class="back-link" @click=${e.onClose}>ABC ✕</button>
+      </div>
+      <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:8px;">
+        <button class="key-btn special" style="height:52px; flex-direction:column; gap:2px; font-size:11px;" @click=${e.onCycleTheme}>
+          ${l(S.theme())}
+          <span>${()=>e.theme.value}</span>
+        </button>
+        <button class="key-btn special" style="height:52px; flex-direction:column; gap:2px; font-size:11px;" @click=${e.onToggleOneHanded}>
+          ${l(S.oneHanded())}
+          <span>${()=>e.oneHanded.value}</span>
+        </button>
+        <button class="key-btn special" style="height:52px; flex-direction:column; gap:2px; font-size:11px;" @click=${e.onCycleHeight}>
+          ${l(S.height())}
+          <span>${()=>e.height.value}</span>
+        </button>
+        <button class="key-btn special" style="height:52px; flex-direction:column; gap:2px; font-size:11px;" @click=${e.onToggleNumberRow}>
+          ${l(S.numbers())}
+          <span>${()=>e.numberRow.value?"1-0: ON":"1-0: OFF"}</span>
+        </button>
+        <button class="key-btn special" style="height:52px; flex-direction:column; gap:2px; font-size:11px;" @click=${e.onOpenTextEdit}>
+          ${l(S.edit())}
+          <span>Text Edit</span>
+        </button>
+        <button class="key-btn special" style="height:52px; flex-direction:column; gap:2px; font-size:11px;" @click=${e.onOpenHelp}>
+          ${l(S.help())}
+          <span>Guide</span>
+        </button>
+      </div>
+    </div>
+  `)}const oe=new bt,N=new vt,m=k("qwerty"),T=k(""),L=k((()=>{try{const e=localStorage.getItem("rizzboard_theme");if(e==="amoled"||e==="light"||e==="slate")return e}catch{}return"slate"})()),W=k((()=>{try{const e=localStorage.getItem("rizzboard_one_handed");if(e==="right"||e==="left"||e==="off")return e}catch{}return"off"})()),V=k((()=>{try{return localStorage.getItem("rizzboard_number_row")==="true"}catch{}return!1})()),j=k((()=>{try{const e=localStorage.getItem("rizzboard_height");if(e==="compact"||e==="tall"||e==="normal")return e}catch{}return"normal"})()),K=k(void 0),E=k(null),D=k(null),x=k(!1),B=k(""),Y=k(null),q=k(!1),Be=k(null),Z=k(["What is your biggest red flag?","Are we still on for coffee this weekend?"]),Bt=Ne(()=>{const e=x.value?B.value:T.value;if(!e)return x.value?["asked","red","weekend"]:["how","are","you"];const t=e.trim().split(/\s+/),n=t[t.length-1];if(e.endsWith(" "))return oe.predictNextWord(n,3);{const o=oe.completePrefix(n,3);return o.length>0?o:[n]}});re.registerNativeCallback("appContextChanged",e=>{if(e!=null&&e.packageName){K.value=e.packageName;try{const t=Me();if(t.status==="ok"&&t.blocks.length>0){const n=N.ingestScreenBlocks(t.blocks,"accessibility",{appPackage:t.appPackage??e.packageName});n&&(E.value=n)}}catch{}}});re.registerNativeCallback("screenshotDetected",e=>{e!=null&&e.uri&&(E.value={id:`screenshot-${e.timestamp??Date.now()}`,source:"screenshot",partnerText:"Screenshot captured",uri:e.uri,appPackage:e.appPackage??K.value,timestamp:Date.now()},f("heavy"))});re.registerNativeCallback("contextDetected",e=>{if(!(e!=null&&e.text)||!(e!=null&&e.source))return;const t=N.ingestRawContext({source:e.source,text:e.text,senderName:e.senderName,appPackage:e.appPackage??K.value,timestamp:e.timestamp});t&&(E.value=t,f("click"))});re.registerNativeCallback("clipboardAdded",e=>{if(e!=null&&e.text){const t=String(e.text).trim();if(!t)return;Z.value=[t,...Z.value.filter(o=>o!==t).slice(0,9)];const n=N.ingestRawContext({source:"clipboard",text:t,appPackage:K.value});n&&(E.value=n)}});const H=rt();if(H.status==="ok"&&H.text&&H.source){const e=N.ingestRawContext({source:H.source,text:H.text,senderName:H.senderName,appPackage:H.appPackage,timestamp:H.timestamp});e&&(E.value=e)}function ke(e){if(f("heavy"),e.source==="screenshot"&&e.uri){const n=ot(e.uri),o=N.ingestScreenBlocks(n.blocks,"screenshot",{appPackage:n.appPackage??e.appPackage,uri:e.uri});if(!o){E.value=null,J("Screenshot looked blank/protected — type what they said:");return}D.value=N.resolveSuggestions(o),E.value=null,x.value=!1,m.value="nextmove";return}D.value=N.resolveSuggestions(e),E.value=null,x.value=!1,m.value="nextmove",new Oe().generateOnlineSuggestions(e.partnerText).then(n=>{var o;((o=D.value)==null?void 0:o.context.id)===e.id&&n.length>=3&&(D.value={...D.value,suggestions:n})}).catch(()=>{})}function Ce(){f("click");const e=Me();if(e.status==="ok"&&e.blocks.length>0){const t=N.ingestScreenBlocks(e.blocks,"accessibility",{appPackage:e.appPackage??K.value});if(t){D.value=N.resolveSuggestions(t),x.value=!1,m.value="nextmove";return}}if(e.status==="not_enabled"){q.value=!0,J("Scanner off — type what they said, or tap Enable Scanner ⚙");return}q.value=!1,J("Screen protected (FLAG_SECURE) — type a quick summary here:")}function J(e){Y.value=e??null,x.value=!0,m.value="qwerty"}function It(){f("click"),x.value?(x.value=!1,Y.value=null,q.value=!1):(q.value=!1,J())}function Se(){f("heavy");const e=B.value.trim(),t=N.ingestRawContext({source:"manual",text:e||"start playful conversation",appPackage:K.value});t&&(D.value=N.resolveSuggestions(t),x.value=!1,Y.value=null,q.value=!1,m.value="nextmove")}function Dt(e){f("heavy"),N.recordCommittedReply(e),F(e),T.value=e,B.value="",m.value="qwerty"}function Lt(e){const t=N.ingestRawContext({source:"manual",text:e,appPackage:K.value});t&&(t.source="clipboard",D.value=N.resolveSuggestions(t),m.value="nextmove")}function $e(e){if(f("light"),x.value){B.value+=e;return}if(e===" "||e==="."||e===","||e==="!"||e==="?"){const t=T.value.match(/([a-zA-Z']+)$/);if(t){const n=t[1],o=oe.autocorrect(n);if(o&&o!==n){for(let r=0;r<n.length;r++)X();T.value=T.value.slice(0,-n.length)+o+e,F(o+e);return}else oe.learnWord(n)}}T.value+=e,F(e)}function xe(){if(f("light"),x.value){B.value.length>0&&(B.value=B.value.slice(0,-1));return}T.value.length>0&&(T.value=T.value.slice(0,-1)),X()}function Wt(e){if(f("click"),x.value){const o=B.value,r=o.trim().split(/\s+/),a=o.endsWith(" ")?o:r.length>1?r.slice(0,-1).join(" ")+" ":"";B.value=`${a}${e} `;return}const t=T.value,n=t.trim().split(/\s+/);if(!t.endsWith(" ")&&n.length>0){const o=n[n.length-1];for(let r=0;r<o.length;r++)X()}F(e+" "),T.value=(t.endsWith(" ")?t:n.length>1?n.slice(0,-1).join(" ")+" ":"")+e+" "}function jt(){f("heavy"),Be.value=wt(T.value),m.value="roast"}function Ht(e){f("click");for(let t=0;t<T.value.length;t++)X();N.recordCommittedReply(e),F(e),T.value=e,m.value="qwerty"}function Ft(){return h`
+    <div class="rizz-app" data-theme=${()=>L.value} data-one-handed=${()=>W.value} data-height=${()=>j.value}>
+      ${kt({activeContext:E,stealthMode:x,onOpenContextReplies:()=>{E.value&&ke(E.value)},onScanScreen:Ce,onToggleStealth:It,onToggleRoast:()=>{m.value==="roast"?m.value="qwerty":jt()},onToggleClipboard:()=>m.value=m.value==="clipboard"?"qwerty":"clipboard",onToggleEmojis:()=>m.value=m.value==="emojis"?"qwerty":"emojis",onVoiceInput:()=>{f("click"),at()},onSwitchKeyboard:()=>{f("click"),it()},onToggleTextEdit:()=>m.value=m.value==="textedit"?"qwerty":"textedit",onToggleHelp:()=>m.value=m.value==="help"?"qwerty":"help",onCycleTheme:()=>{f("click");const e=L.value==="slate"?"amoled":L.value==="amoled"?"light":"slate";L.value=e;try{localStorage.setItem("rizzboard_theme",e)}catch{}},onToggleOneHanded:()=>{f("click");const e=W.value==="off"?"right":W.value==="right"?"left":"off";W.value=e;try{localStorage.setItem("rizzboard_one_handed",e)}catch{}},onToggleNumberRow:()=>{f("click");const e=!V.value;V.value=e;try{localStorage.setItem("rizzboard_number_row",String(e))}catch{}},onToggleTalks:()=>m.value=m.value==="talks"?"qwerty":"talks",onCycleHeight:()=>{f("click");const e=j.value==="normal"?"compact":j.value==="compact"?"tall":"normal";j.value=e;try{localStorage.setItem("rizzboard_height",e)}catch{}}})}
+
+      ${()=>x.value?Ct({buffer:B,hint:Y,showEnableScanner:q,onGenerate:Se,onEnableScanner:()=>Re("accessibility"),onCancel:()=>{x.value=!1,Y.value=null,q.value=!1}}):""}
+
+      ${St({suggestions:Bt,onSelectSuggestion:Wt})}
+
+      ${()=>{const e=m.value;return e==="nextmove"?_t({resolution:D,onSelectReply:Dt,onSwitchToStealth:()=>{var t;B.value=((t=D.value)==null?void 0:t.context.partnerText)??"",J()},onClose:()=>m.value="qwerty"}):e==="emojis"?Pt({onSelectEmoji:$e,onClose:()=>m.value="qwerty"}):e==="clipboard"?At({history:Z,onSelectClip:t=>{N.recordCommittedReply(t),F(t),m.value="qwerty"},onAnalyzeClip:t=>{f("heavy"),Lt(t)},onDeleteClip:t=>{f("light"),Z.value=Z.value.filter(n=>n!==t)},onClearAll:()=>{f("click"),Z.value=[]},onClose:()=>m.value="qwerty"}):e==="roast"?Nt({roast:Be,onApplyUpgrade:Ht,onClose:()=>m.value="qwerty"}):e==="textedit"?Mt({onBackspace:xe,onClose:()=>m.value="qwerty"}):e==="help"?Et({onClose:()=>m.value="qwerty"}):e==="talks"?Ot({onSelectLine:t=>{f("heavy"),F(t),m.value="qwerty"},onClose:()=>m.value="qwerty"}):e==="settings"?zt({theme:L,oneHanded:W,height:j,numberRow:V,onCycleTheme:()=>{f("click");const t=L.value==="slate"?"amoled":L.value==="amoled"?"light":"slate";L.value=t;try{localStorage.setItem("rizzboard_theme",t)}catch{}},onToggleOneHanded:()=>{f("click");const t=W.value==="off"?"right":W.value==="right"?"left":"off";W.value=t;try{localStorage.setItem("rizzboard_one_handed",t)}catch{}},onCycleHeight:()=>{f("click");const t=j.value==="normal"?"compact":j.value==="compact"?"tall":"normal";j.value=t;try{localStorage.setItem("rizzboard_height",t)}catch{}},onToggleNumberRow:()=>{f("click");const t=!V.value;V.value=t;try{localStorage.setItem("rizzboard_number_row",String(t))}catch{}},onOpenTextEdit:()=>m.value="textedit",onOpenHelp:()=>m.value="help",onClose:()=>m.value="qwerty"}):xt({stealthMode:x,showNumberRow:V,onKeyPress:$e,onBackspace:xe,onSend:()=>{x.value?Se():(f("heavy"),nt())},onOpenEmojis:()=>m.value="emojis",onMoveCursor:t=>{f("light"),st(t)},onDeleteWord:()=>{f("heavy");const t=T.value.match(/(\S+\s*)$/),n=t?t[1].length:1;T.value=T.value.slice(0,-n);for(let o=0;o<n;o++)X()},onSwipeUpSpace:()=>{f("click"),E.value?ke(E.value):Ce()}})}}
+    </div>
+  `}const Te=document.getElementById("app");if(Te){const{fragment:e}=ce(Ft());Te.appendChild(e)}

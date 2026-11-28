@@ -36,6 +36,7 @@ import { NextMovePanel } from './components/panels/NextMovePanel.ts';
 import { TextEditPanel } from './components/panels/TextEditPanel.ts';
 import { HelpPanel } from './components/panels/HelpPanel.ts';
 import { TalksPanel } from './components/panels/TalksPanel.ts';
+import { SettingsPanel } from './components/panels/SettingsPanel.ts';
 
 import './styles/keyboard.css';
 
@@ -43,7 +44,7 @@ const predictive = new PredictiveEngine();
 const contextRouter = new HybridContextRouter();
 
 // Reactive UI State
-export type KeyboardView = 'qwerty' | 'emojis' | 'clipboard' | 'roast' | 'nextmove' | 'textedit' | 'help' | 'talks';
+export type KeyboardView = 'qwerty' | 'emojis' | 'clipboard' | 'roast' | 'nextmove' | 'textedit' | 'help' | 'talks' | 'settings';
 const currentView = signal<KeyboardView>('qwerty');
 const typedBuffer = signal<string>('');
 const activeTheme = signal<'slate' | 'amoled' | 'light'>(
@@ -562,6 +563,41 @@ export function App() {
               commitToChat(line);
               currentView.value = 'qwerty';
             },
+            onClose: () => (currentView.value = 'qwerty')
+          });
+        }
+        if (view === 'settings') {
+          return SettingsPanel({
+            theme: activeTheme,
+            oneHanded: oneHandedMode,
+            height: keyboardHeight,
+            numberRow: showNumberRow,
+            onCycleTheme: () => {
+              triggerHaptic('click');
+              const next = activeTheme.value === 'slate' ? 'amoled' : activeTheme.value === 'amoled' ? 'light' : 'slate';
+              activeTheme.value = next;
+              try { localStorage.setItem('rizzboard_theme', next); } catch {}
+            },
+            onToggleOneHanded: () => {
+              triggerHaptic('click');
+              const next = oneHandedMode.value === 'off' ? 'right' : oneHandedMode.value === 'right' ? 'left' : 'off';
+              oneHandedMode.value = next;
+              try { localStorage.setItem('rizzboard_one_handed', next); } catch {}
+            },
+            onCycleHeight: () => {
+              triggerHaptic('click');
+              const next = keyboardHeight.value === 'normal' ? 'compact' : keyboardHeight.value === 'compact' ? 'tall' : 'normal';
+              keyboardHeight.value = next;
+              try { localStorage.setItem('rizzboard_height', next); } catch {}
+            },
+            onToggleNumberRow: () => {
+              triggerHaptic('click');
+              const next = !showNumberRow.value;
+              showNumberRow.value = next;
+              try { localStorage.setItem('rizzboard_number_row', String(next)); } catch {}
+            },
+            onOpenTextEdit: () => (currentView.value = 'textedit'),
+            onOpenHelp: () => (currentView.value = 'help'),
             onClose: () => (currentView.value = 'qwerty')
           });
         }
