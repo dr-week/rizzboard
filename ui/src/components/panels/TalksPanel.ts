@@ -34,6 +34,14 @@ const TALKS_DECKS = [
       'I will take that as a yes. What are you up to this weekend?',
       'Do not hurt your thumbs typing a whole novel over there.'
     ]
+  },
+  {
+    name: 'Deals',
+    lines: [
+      'Quick check-in—are we still aligned to kick this off this week?',
+      'Totally fair—let us look at the ROI: this pays for itself in week one.',
+      'If everything looks good, I can send the agreement over today—shall we lock it in?'
+    ]
   }
 ];
 
