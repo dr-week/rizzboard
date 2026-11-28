@@ -161,6 +161,17 @@ class SettingsActivity : AppCompatActivity() {
             )
         )
 
+        // Card 6: Live Keyboard Test Box
+        val testBox = android.widget.EditText(this).apply {
+            hint = "Tap here to test RizzBoard (typing, spacebar, voice, Konkani)..."
+            setHintTextColor(android.graphics.Color.parseColor("#64748B"))
+            setTextColor(android.graphics.Color.WHITE)
+            setBackgroundColor(android.graphics.Color.parseColor("#0F172A"))
+            setPadding(32, 28, 32, 28)
+            textSize = 14f
+        }
+        container.addView(testBox)
+
         scroll.addView(container)
         setContentView(scroll)
     }
