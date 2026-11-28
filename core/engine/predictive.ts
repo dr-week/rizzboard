@@ -203,15 +203,19 @@ export class PredictiveEngine {
       return null;
     }
 
-    // Fuzzy edit-distance 1 lookup
+    // Fuzzy edit-distance 1 (or 2 for longer words) lookup
     let bestWord: string | null = null;
+    let bestDist = 3;
     let bestFreq = 0;
+    const maxDist = lower.length >= 5 ? 2 : 1;
 
     for (const candidate of this.dictionaryWords) {
-      if (Math.abs(candidate.length - lower.length) > 1) continue;
-      if (this.levenshtein(lower, candidate) === 1) {
+      if (Math.abs(candidate.length - lower.length) > maxDist) continue;
+      const dist = this.levenshtein(lower, candidate);
+      if (dist <= maxDist) {
         const freq = this.getWordFrequency(candidate);
-        if (freq > bestFreq) {
+        if (dist < bestDist || (dist === bestDist && freq > bestFreq)) {
+          bestDist = dist;
           bestFreq = freq;
           bestWord = candidate;
         }

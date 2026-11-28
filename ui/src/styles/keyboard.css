@@ -149,3 +149,8 @@
 .rizz-app[data-theme="slate"] .key-btn.send {
   border-radius: 20px;
 }
+
+.key-btn.active-shift {
+  background: #6366f1 !important;
+  color: #ffffff !important;
+}
