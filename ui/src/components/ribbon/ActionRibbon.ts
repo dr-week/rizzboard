@@ -32,24 +32,25 @@ export function ActionRibbon(options: {
           `)
         : ''}
       <button class="action-pill" @click=${options.onVoiceInput} title="Google Voice Typing">
-        🎙️ Mic
+        🎙️
       </button>
-      <button class="action-pill" @click=${options.onScanScreen}>
-        👁️ Scan
+      <button class="action-pill" @click=${options.onScanScreen} title="Scan Screen">
+        👁️
       </button>
       <button
         class=${() => options.stealthMode.value ? 'action-pill active-mode' : 'action-pill'}
-        @click=${options.onToggleStealth}>
-        💬 Tell Rizz
+        @click=${options.onToggleStealth}
+        title="Tell Rizz">
+        💬
       </button>
-      <button class="action-pill" @click=${options.onToggleRoast}>
-        🔥 Roast
+      <button class="action-pill" @click=${options.onToggleRoast} title="Roast Draft">
+        🔥
       </button>
-      <button class="action-pill" @click=${options.onToggleClipboard}>
-        📋 Clipboard
+      <button class="action-pill" @click=${options.onToggleClipboard} title="Clipboard">
+        📋
       </button>
-      <button class="action-pill" @click=${options.onToggleEmojis}>
-        😏 Emojis
+      <button class="action-pill" @click=${options.onToggleEmojis} title="Emojis">
+        😏
       </button>
       <button class="action-pill" @click=${options.onToggleTextEdit} title="Text Editing">
         ✂️
