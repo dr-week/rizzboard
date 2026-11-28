@@ -9,7 +9,9 @@ import {
   requestScreenshotOCR,
   requestLiveScreenScan,
   fetchActiveNativeContext,
-  openNativeSetting
+  openNativeSetting,
+  startVoiceTyping,
+  showInputMethodPicker
 } from './services/bridge-service.ts';
 import {
   PredictiveEngine,
@@ -346,7 +348,15 @@ export function App() {
         onToggleClipboard: () =>
           (currentView.value = currentView.value === 'clipboard' ? 'qwerty' : 'clipboard'),
         onToggleEmojis: () =>
-          (currentView.value = currentView.value === 'emojis' ? 'qwerty' : 'emojis')
+          (currentView.value = currentView.value === 'emojis' ? 'qwerty' : 'emojis'),
+        onVoiceInput: () => {
+          triggerHaptic('click');
+          startVoiceTyping();
+        },
+        onSwitchKeyboard: () => {
+          triggerHaptic('click');
+          showInputMethodPicker();
+        }
       })}
 
       ${() =>

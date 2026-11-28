@@ -1,5 +1,9 @@
+import { signal } from '@zuari/signals';
 import { html } from '@zuari/dom';
 import { mountList, mountTemplate } from '../../services/dom-helper.ts';
+
+type ShiftState = 'off' | 'once' | 'caps';
+type GridLayer = 'alpha' | 'numbers' | 'symbols';
 
 export function QwertyGrid(options: {
   stealthMode: { value: boolean };
@@ -7,47 +11,154 @@ export function QwertyGrid(options: {
   onBackspace: () => void;
   onSend: () => void;
   onOpenEmojis: () => void;
+  onVoiceInput?: () => void;
 }) {
-  const row1 = ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'];
-  const row2 = ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'];
-  const row3 = ['z', 'x', 'c', 'v', 'b', 'n', 'm'];
+  const shiftState = signal<ShiftState>('off');
+  const activeLayer = signal<GridLayer>('alpha');
 
-  const row3El = document.createElement('div');
-  row3El.className = 'keyboard-row';
-  row3El.appendChild(
-    mountTemplate(html`<button class="key-btn special" @click=${options.onOpenEmojis}>123</button>`)
-  );
-  for (const k of row3) {
+  const alphaRow1 = ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'];
+  const alphaRow2 = ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'];
+  const alphaRow3 = ['z', 'x', 'c', 'v', 'b', 'n', 'm'];
+
+  const numRow1 = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'];
+  const numRow2 = ['@', '#', '$', '_', '&', '-', '+', '(', ')', '/'];
+  const numRow3 = ['*', '"', "'", ':', ';', '!', '?'];
+
+  const symRow1 = ['~', '`', '|', '•', '√', 'π', '÷', '×', '§', 'Δ'];
+  const symRow2 = ['£', '€', '¥', '^', '°', '=', '{', '}', '\\', '©'];
+  const symRow3 = ['%', '®', '™', '✓', '[', ']', '<', '>'];
+
+  const handleAlphaKey = (char: string) => {
+    const isUpper = shiftState.value !== 'off';
+    const out = isUpper ? char.toUpperCase() : char;
+    options.onKeyPress(out);
+    if (shiftState.value === 'once') {
+      shiftState.value = 'off';
+    }
+  };
+
+  const toggleShift = () => {
+    if (shiftState.value === 'off') {
+      shiftState.value = 'once';
+    } else if (shiftState.value === 'once') {
+      shiftState.value = 'caps';
+    } else {
+      shiftState.value = 'off';
+    }
+  };
+
+  const renderAlpha = () => {
+    const isUpper = shiftState.value !== 'off';
+    const shiftLabel = shiftState.value === 'caps' ? '⇪' : shiftState.value === 'once' ? '⬆' : '⇧';
+    const shiftClass = shiftState.value === 'off' ? 'key-btn special' : 'key-btn special active-shift';
+
+    const row3El = document.createElement('div');
+    row3El.className = 'keyboard-row';
     row3El.appendChild(
-      mountTemplate(html`<button class="key-btn" @click=${() => options.onKeyPress(k)}>${k}</button>`)
+      mountTemplate(html`<button class=${shiftClass} @click=${toggleShift}>${shiftLabel}</button>`)
     );
-  }
-  row3El.appendChild(
-    mountTemplate(html`<button class="key-btn special" @click=${options.onBackspace}>⌫</button>`)
-  );
+    for (const k of alphaRow3) {
+      const label = isUpper ? k.toUpperCase() : k;
+      row3El.appendChild(
+        mountTemplate(html`<button class="key-btn" @click=${() => handleAlphaKey(k)}>${label}</button>`)
+      );
+    }
+    row3El.appendChild(
+      mountTemplate(html`<button class="key-btn special" @click=${options.onBackspace}>⌫</button>`)
+    );
+
+    return mountTemplate(html`
+      <div class="keyboard-grid">
+        ${mountList(
+          'keyboard-row',
+          alphaRow1.map(k => {
+            const label = isUpper ? k.toUpperCase() : k;
+            return html`<button class="key-btn" @click=${() => handleAlphaKey(k)}>${label}</button>`;
+          })
+        )}
+        ${mountList(
+          'keyboard-row',
+          alphaRow2.map(k => {
+            const label = isUpper ? k.toUpperCase() : k;
+            return html`<button class="key-btn" @click=${() => handleAlphaKey(k)}>${label}</button>`;
+          })
+        )}
+        ${row3El}
+        <div class="keyboard-row">
+          <button class="key-btn special" @click=${() => activeLayer.value = 'numbers'}>123</button>
+          <button class="key-btn special" @click=${options.onOpenEmojis}>😏</button>
+          <button class="key-btn special" @click=${() => options.onKeyPress(',')}>,</button>
+          <button class="key-btn space" @click=${() => options.onKeyPress(' ')}>
+            ${() => options.stealthMode.value ? 'stealth space' : 'space'}
+          </button>
+          <button class="key-btn special" @click=${() => options.onKeyPress('.')}>.</button>
+          <button class="key-btn send" @click=${options.onSend}>
+            ${() => options.stealthMode.value ? 'Ask ⚡' : 'Send'}
+          </button>
+        </div>
+      </div>
+    `);
+  };
+
+  const renderNumbersOrSymbols = (isSymbols: boolean) => {
+    const r1 = isSymbols ? symRow1 : numRow1;
+    const r2 = isSymbols ? symRow2 : numRow2;
+    const r3 = isSymbols ? symRow3 : numRow3;
+
+    const row3El = document.createElement('div');
+    row3El.className = 'keyboard-row';
+    row3El.appendChild(
+      mountTemplate(html`
+        <button
+          class="key-btn special"
+          @click=${() => activeLayer.value = isSymbols ? 'numbers' : 'symbols'}>
+          ${isSymbols ? '123' : '=\\<'}
+        </button>
+      `)
+    );
+    for (const k of r3) {
+      row3El.appendChild(
+        mountTemplate(html`<button class="key-btn" @click=${() => options.onKeyPress(k)}>${k}</button>`)
+      );
+    }
+    row3El.appendChild(
+      mountTemplate(html`<button class="key-btn special" @click=${options.onBackspace}>⌫</button>`)
+    );
+
+    return mountTemplate(html`
+      <div class="keyboard-grid">
+        ${mountList(
+          'keyboard-row',
+          r1.map(k => html`<button class="key-btn" @click=${() => options.onKeyPress(k)}>${k}</button>`)
+        )}
+        ${mountList(
+          'keyboard-row',
+          r2.map(k => html`<button class="key-btn" @click=${() => options.onKeyPress(k)}>${k}</button>`)
+        )}
+        ${row3El}
+        <div class="keyboard-row">
+          <button class="key-btn special" @click=${() => activeLayer.value = 'alpha'}>ABC</button>
+          <button class="key-btn special" @click=${options.onOpenEmojis}>😏</button>
+          <button class="key-btn special" @click=${() => options.onKeyPress(',')}>,</button>
+          <button class="key-btn space" @click=${() => options.onKeyPress(' ')}>
+            ${() => options.stealthMode.value ? 'stealth space' : 'space'}
+          </button>
+          <button class="key-btn special" @click=${() => options.onKeyPress('.')}>.</button>
+          <button class="key-btn send" @click=${options.onSend}>
+            ${() => options.stealthMode.value ? 'Ask ⚡' : 'Send'}
+          </button>
+        </div>
+      </div>
+    `);
+  };
 
   return mountTemplate(html`
-    <div class="keyboard-grid">
-      ${mountList(
-        'keyboard-row',
-        row1.map(k => html`<button class="key-btn" @click=${() => options.onKeyPress(k)}>${k}</button>`)
-      )}
-      ${mountList(
-        'keyboard-row',
-        row2.map(k => html`<button class="key-btn" @click=${() => options.onKeyPress(k)}>${k}</button>`)
-      )}
-      ${row3El}
-      <div class="keyboard-row">
-        <button class="key-btn special" @click=${options.onOpenEmojis}>😏</button>
-        <button class="key-btn special" @click=${() => options.onKeyPress('?')}>?</button>
-        <button class="key-btn space" @click=${() => options.onKeyPress(' ')}>
-          ${() => options.stealthMode.value ? 'stealth space' : 'space'}
-        </button>
-        <button class="key-btn special" @click=${() => options.onKeyPress('.')}>.</button>
-        <button class="key-btn send" @click=${options.onSend}>
-          ${() => options.stealthMode.value ? 'Ask ⚡' : 'Send'}
-        </button>
-      </div>
+    <div class="keyboard-grid-wrapper">
+      ${() => {
+        if (activeLayer.value === 'numbers') return renderNumbersOrSymbols(false);
+        if (activeLayer.value === 'symbols') return renderNumbersOrSymbols(true);
+        return renderAlpha();
+      }}
     </div>
   `);
 }

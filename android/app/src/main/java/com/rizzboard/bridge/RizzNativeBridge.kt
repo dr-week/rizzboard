@@ -110,4 +110,14 @@ class RizzNativeBridge(private val service: RizzInputMethodService) {
             service.requestHideSelf(0)
         }
     }
+
+    @JavascriptInterface
+    fun startVoiceTyping() {
+        service.switchToVoiceInput()
+    }
+
+    @JavascriptInterface
+    fun showInputMethodPicker() {
+        service.showKeyboardPicker()
+    }
 }

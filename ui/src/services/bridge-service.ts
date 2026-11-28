@@ -117,3 +117,21 @@ export function openNativeSetting(target: 'notifications' | 'accessibility' | 's
     console.log('[Dev Mock Open Setting]:', target);
   }
 }
+
+export function startVoiceTyping() {
+  const android = getAndroidInterface();
+  if (android && typeof android.startVoiceTyping === 'function') {
+    android.startVoiceTyping();
+  } else {
+    console.log('[Dev Mock Voice Typing]');
+  }
+}
+
+export function showInputMethodPicker() {
+  const android = getAndroidInterface();
+  if (android && typeof android.showInputMethodPicker === 'function') {
+    android.showInputMethodPicker();
+  } else {
+    console.log('[Dev Mock IME Picker]');
+  }
+}

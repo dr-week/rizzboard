@@ -247,6 +247,44 @@ class RizzInputMethodService : InputMethodService() {
         }
     }
 
+    fun switchToVoiceInput() {
+        mainHandler.post {
+            val imm = getSystemService(INPUT_METHOD_SERVICE) as? android.view.inputmethod.InputMethodManager
+                ?: return@post
+            val voiceIme = imm.enabledInputMethodList.firstOrNull { imi ->
+                val id = imi.id.lowercase()
+                val pkg = imi.packageName.lowercase()
+                id.contains("voice") ||
+                    pkg.contains("googlequicksearchbox") ||
+                    pkg.contains("speech") ||
+                    imi.serviceName.lowercase().contains("voice")
+            }
+            if (voiceIme != null) {
+                try {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                        switchInputMethod(voiceIme.id)
+                    } else {
+                        @Suppress("DEPRECATION")
+                        val token = window?.window?.attributes?.token
+                        @Suppress("DEPRECATION")
+                        imm.setInputMethod(token, voiceIme.id)
+                    }
+                    return@post
+                } catch (_: Exception) {
+                    // Fall through to system IME picker
+                }
+            }
+            imm.showInputMethodPicker()
+        }
+    }
+
+    fun showKeyboardPicker() {
+        mainHandler.post {
+            val imm = getSystemService(INPUT_METHOD_SERVICE) as? android.view.inputmethod.InputMethodManager
+            imm?.showInputMethodPicker()
+        }
+    }
+
     override fun onDestroy() {
         ContextMemoryStore.listener = null
         screenshotObserver?.let { contentResolver.unregisterContentObserver(it) }

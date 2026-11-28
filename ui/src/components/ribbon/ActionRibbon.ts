@@ -14,6 +14,8 @@ export function ActionRibbon(options: {
   onToggleRoast: () => void;
   onToggleClipboard: () => void;
   onToggleEmojis: () => void;
+  onVoiceInput: () => void;
+  onSwitchKeyboard: () => void;
 }) {
   return mountTemplate(html`
     <div class="action-bar">
@@ -24,8 +26,11 @@ export function ActionRibbon(options: {
             </button>
           `)
         : ''}
+      <button class="action-pill" @click=${options.onVoiceInput} title="Google Voice Typing">
+        🎙️ Mic
+      </button>
       <button class="action-pill" @click=${options.onScanScreen}>
-        👁️ Scan Screen
+        👁️ Scan
       </button>
       <button
         class=${() => options.stealthMode.value ? 'action-pill active-mode' : 'action-pill'}
@@ -33,13 +38,16 @@ export function ActionRibbon(options: {
         💬 Tell Rizz
       </button>
       <button class="action-pill" @click=${options.onToggleRoast}>
-        🔥 Roast Draft
+        🔥 Roast
       </button>
       <button class="action-pill" @click=${options.onToggleClipboard}>
         📋 Clipboard
       </button>
       <button class="action-pill" @click=${options.onToggleEmojis}>
         😏 Emojis
+      </button>
+      <button class="action-pill" @click=${options.onSwitchKeyboard} title="Switch Keyboard">
+        🌐
       </button>
     </div>
   `);
