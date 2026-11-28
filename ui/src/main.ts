@@ -16,6 +16,7 @@ import {
 } from './services/bridge-service.ts';
 import {
   PredictiveEngine,
+  RizzEngine,
   analyzeDraftLocal,
   HybridContextRouter,
   type DraftAnalysis,
@@ -215,6 +216,17 @@ function openRepliesForContext(ctx: ConversationContext) {
   pendingContext.value = null;
   stealthMode.value = false;
   currentView.value = 'nextmove';
+
+  // Seamlessly upgrade with free Pollinations.ai suggestions if online
+  const engine = new RizzEngine();
+  engine.generateOnlineSuggestions(ctx.partnerText).then(onlineReplies => {
+    if (activeResolution.value?.context.id === ctx.id && onlineReplies.length >= 3) {
+      activeResolution.value = {
+        ...activeResolution.value,
+        suggestions: onlineReplies
+      };
+    }
+  }).catch(() => {});
 }
 
 function handleLiveScreenScan() {
