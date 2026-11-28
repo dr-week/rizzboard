@@ -22,6 +22,8 @@ export function ActionRibbon(options: {
   onCycleTheme: () => void;
   onToggleOneHanded: () => void;
   onToggleNumberRow: () => void;
+  onToggleTalks: () => void;
+  onCycleHeight: () => void;
 }) {
   return mountTemplate(html`
     <div class="action-bar">
@@ -67,6 +69,12 @@ export function ActionRibbon(options: {
       </button>
       <button class="action-pill" @click=${options.onToggleNumberRow} title="Number Row">
         ${mountTemplate(Icons.numbers())}
+      </button>
+      <button class="action-pill" @click=${options.onToggleTalks} title="Rizz Talks">
+        ${mountTemplate(Icons.talks())}
+      </button>
+      <button class="action-pill" @click=${options.onCycleHeight} title="Keyboard Height">
+        ${mountTemplate(Icons.height())}
       </button>
       <button class="action-pill" @click=${options.onSwitchKeyboard} title="Switch Keyboard">
         ${mountTemplate(Icons.globe())}

@@ -35,6 +35,7 @@ import { RoastPanel } from './components/panels/RoastPanel.ts';
 import { NextMovePanel } from './components/panels/NextMovePanel.ts';
 import { TextEditPanel } from './components/panels/TextEditPanel.ts';
 import { HelpPanel } from './components/panels/HelpPanel.ts';
+import { TalksPanel } from './components/panels/TalksPanel.ts';
 
 import './styles/keyboard.css';
 
@@ -42,7 +43,7 @@ const predictive = new PredictiveEngine();
 const contextRouter = new HybridContextRouter();
 
 // Reactive UI State
-export type KeyboardView = 'qwerty' | 'emojis' | 'clipboard' | 'roast' | 'nextmove' | 'textedit' | 'help';
+export type KeyboardView = 'qwerty' | 'emojis' | 'clipboard' | 'roast' | 'nextmove' | 'textedit' | 'help' | 'talks';
 const currentView = signal<KeyboardView>('qwerty');
 const typedBuffer = signal<string>('');
 const activeTheme = signal<'slate' | 'amoled' | 'light'>(
@@ -69,6 +70,15 @@ const showNumberRow = signal<boolean>(
       return localStorage.getItem('rizzboard_number_row') === 'true';
     } catch {}
     return false;
+  })())
+);
+const keyboardHeight = signal<'normal' | 'compact' | 'tall'>(
+  ((() => {
+    try {
+      const saved = localStorage.getItem('rizzboard_height');
+      if (saved === 'compact' || saved === 'tall' || saved === 'normal') return saved;
+    } catch {}
+    return 'normal';
   })())
 );
 
@@ -404,7 +414,7 @@ function acceptRoastFix(improved: string) {
 
 export function App() {
   return html`
-    <div class="rizz-app" data-theme=${() => activeTheme.value} data-one-handed=${() => oneHandedMode.value}>
+    <div class="rizz-app" data-theme=${() => activeTheme.value} data-one-handed=${() => oneHandedMode.value} data-height=${() => keyboardHeight.value}>
       ${ActionRibbon({
         activeContext: pendingContext,
         stealthMode,
@@ -453,6 +463,14 @@ export function App() {
           const next = !showNumberRow.value;
           showNumberRow.value = next;
           try { localStorage.setItem('rizzboard_number_row', String(next)); } catch {}
+        },
+        onToggleTalks: () =>
+          (currentView.value = currentView.value === 'talks' ? 'qwerty' : 'talks'),
+        onCycleHeight: () => {
+          triggerHaptic('click');
+          const next = keyboardHeight.value === 'normal' ? 'compact' : keyboardHeight.value === 'compact' ? 'tall' : 'normal';
+          keyboardHeight.value = next;
+          try { localStorage.setItem('rizzboard_height', next); } catch {}
         }
       })}
 
@@ -534,6 +552,16 @@ export function App() {
         }
         if (view === 'help') {
           return HelpPanel({
+            onClose: () => (currentView.value = 'qwerty')
+          });
+        }
+        if (view === 'talks') {
+          return TalksPanel({
+            onSelectLine: line => {
+              triggerHaptic('heavy');
+              commitToChat(line);
+              currentView.value = 'qwerty';
+            },
             onClose: () => (currentView.value = 'qwerty')
           });
         }
