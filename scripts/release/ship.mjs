@@ -11,6 +11,7 @@ const msg = process.argv.slice(2).join(' ').trim() || 'chore(ship): verify, buil
 
 run('node scripts/docs/index-docs.mjs');
 run('node scripts/verify/verify-all.mjs');
+run('node scripts/verify/test-ui-brutal.mjs');
 
 const status = execSync('git status --porcelain').toString().trim();
 if (status) {

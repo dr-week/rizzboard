@@ -17,6 +17,7 @@
     "release:dry-run": "node scripts/release/cut-release.mjs --dry-run",
     "release:github": "node scripts/release/cut-release.mjs",
     "ship": "node scripts/release/ship.mjs",
-    "docs:index": "node scripts/docs/index-docs.mjs"
+    "docs:index": "node scripts/docs/index-docs.mjs",
+    "test:brutal": "node scripts/verify/test-ui-brutal.mjs"
   }
 }
