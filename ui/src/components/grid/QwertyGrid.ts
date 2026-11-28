@@ -26,17 +26,17 @@ export function QwertyGrid(options: {
   const shiftState = signal<ShiftState>('off');
   const activeLayer = signal<GridLayer>('alpha');
 
-  const alphaRow1 = ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'];
-  const alphaRow2 = ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'];
-  const alphaRow3 = ['z', 'x', 'c', 'v', 'b', 'n', 'm'];
+  const alphaRow1 = ALPHA_ROW_1;
+  const alphaRow2 = ALPHA_ROW_2;
+  const alphaRow3 = ALPHA_ROW_3;
 
-  const numRow1 = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'];
-  const numRow2 = ['@', '#', '$', '_', '&', '-', '+', '(', ')', '/'];
-  const numRow3 = ['*', '"', "'", ':', ';', '!', '?'];
+  const numRow1 = NUM_ROW_1;
+  const numRow2 = NUM_ROW_2;
+  const numRow3 = NUM_ROW_3;
 
-  const symRow1 = ['~', '`', '|', '•', '√', 'π', '÷', '×', '§', 'Δ'];
-  const symRow2 = ['£', '€', '¥', '^', '°', '=', '{', '}', '\\', '©'];
-  const symRow3 = ['%', '®', '™', '✓', '[', ']', '<', '>'];
+  const symRow1 = SYM_ROW_1;
+  const symRow2 = SYM_ROW_2;
+  const symRow3 = SYM_ROW_3;
 
   const handleAlphaKey = (char: string) => {
     const isUpper = shiftState.value !== 'off';
