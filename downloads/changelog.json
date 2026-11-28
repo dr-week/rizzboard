@@ -1,0 +1,55 @@
+{
+  "version": "1.2.2",
+  "entries": [
+    {
+      "hash": "be37356",
+      "date": "2026-11-28",
+      "message": "feat(ui): wire onSwipeWord Glide/Swipe-to-Type hook into QwertyGrid & main.ts"
+    },
+    {
+      "hash": "30652a9",
+      "date": "2026-11-28",
+      "message": "style(ui): streamline ActionRibbon to essential icons + Quick Settings"
+    },
+    {
+      "hash": "c49d96c",
+      "date": "2026-11-28",
+      "message": "chore(scripts): automate brutal UI/UX & APK testing in pnpm ship"
+    },
+    {
+      "hash": "291695d",
+      "date": "2026-11-28",
+      "message": "fix(android): set explicit 290dp height on IME WebView to prevent blank keyboard"
+    },
+    {
+      "hash": "8234840",
+      "date": "2026-11-28",
+      "message": "chore(web): use rizzboard-stamp.jpg everywhere on website"
+    },
+    {
+      "hash": "0ddf6c8",
+      "date": "2026-11-28",
+      "message": "feat(core): expand English & business conversation autocorrect dictionary"
+    },
+    {
+      "hash": "eda82e7",
+      "date": "2026-11-28",
+      "message": "feat(talks,docs): add Business & Deal-Closing playbook and Deals deck"
+    },
+    {
+      "hash": "d750434",
+      "date": "2026-11-28",
+      "message": "feat(android): add LocalDbStore for structured offline dictionary & backup storage"
+    },
+    {
+      "hash": "e5c4b24",
+      "date": "2026-11-28",
+      "message": "docs(architecture): add dictionary, local DB & Google Drive sync plan"
+    },
+    {
+      "hash": "0cdfa6c",
+      "date": "2026-11-28",
+      "message": "feat(core,ui): upgrade autocorrect to edit-distance 2 and add active-shift highlight"
+    }
+  ]
+}

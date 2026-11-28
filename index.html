@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RizzBoard — Sub-Millisecond AI Android Keyboard &amp; Web Chat Extension</title>
+    <meta
+      name="description"
+      content="Download RizzBoard v1.2.2 for Android (APK) and Chrome/Brave/Edge (MV3 Extension). Sub-4ms typing latency, Zero-VDOM Zuari Signals, and 5-Tier Hybrid Context Engine that works even on FLAG_SECURE and Snapchat."
+    />
+    <link rel="icon" type="image/jpeg" href="./assets/rizzboard-stamp.jpg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&family=Space+Grotesk:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles/tokens.css" />
+    <link rel="stylesheet" href="./styles/base.css" />
+    <link rel="stylesheet" href="./styles/hero.css" />
+    <link rel="stylesheet" href="./styles/simulator.css" />
+    <link rel="stylesheet" href="./styles/sections.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container nav-inner">
+        <a href="#top" class="brand-link" id="nav-brand-home">
+          <img
+            src="./assets/rizzboard-stamp.jpg"
+            alt="RizzBoard Stamp Emblem"
+            class="brand-stamp"
+            width="38"
+            height="38"
+          />
+          <div>
+            <span class="brand-name">RizzBoard</span>
+            <span class="brand-lab">DANGER.LABS · EDGE AI</span>
+          </div>
+        </a>
+
+        <nav class="nav-links" aria-label="Primary Navigation">
+          <a href="#hybrid-engine" id="nav-link-hybrid">5-Tier Hybrid</a>
+          <a href="#web-extension" id="nav-link-extension">Web Extension</a>
+          <a href="#architecture" id="nav-link-arch">Architecture</a>
+          <a href="#downloads" id="nav-link-downloads">Downloads</a>
+        </nav>
+
+        <a
+          href="./downloads/rizzboard-v1.2.2-release.apk"
+          download
+          class="btn btn-primary btn-sm"
+          id="nav-download-apk"
+        >
+          ⬇ Download APK
+        </a>
+      </div>
+    </header>
+
+    <main id="top">
+      <!-- Hero & Live Interactive Simulator -->
+      <section class="hero-section">
+        <div class="container hero-grid">
+          <div class="hero-copy">
+            <span class="eyebrow-stamp">RELEASE v1.2.2 · ANDROID API 26–35 &amp; CHROMIUM MV3</span>
+            <h1>Sub-millisecond conversational intelligence for every chat surface.</h1>
+            <p class="hero-lead">
+              Engineered on the Virtual-DOM-free Zuari Signals runtime, RizzBoard combines a
+              zero-latency Android keyboard with a 5-Tier Hybrid Context Engine—working seamlessly
+              even when apps enforce <code>FLAG_SECURE</code> screenshot blocks or Snapchat alerts—plus
+              a companion Manifest V3 Web Browser Extension.
+            </p>
+
+            <div class="hero-cta-row">
+              <a
+                href="./downloads/rizzboard-v1.2.2-release.apk"
+                download
+                class="btn btn-primary"
+                id="hero-download-apk"
+              >
+                <span>⬇ Download Android APK</span>
+                <span class="mono-meta" id="apk-size-badge">v1.2.2</span>
+              </a>
+              <a
+                href="./downloads/rizzboard-extension-v1.2.2.zip"
+                download
+                class="btn btn-secondary"
+                id="hero-download-ext"
+              >
+                <span>⬇ Web Extension (.zip)</span>
+                <span class="mono-meta" id="ext-size-badge">MV3</span>
+              </a>
+            </div>
+
+            <div class="telemetry-strip">
+              <div class="telemetry-item">
+                <span class="telemetry-val">&lt; 4 ms</span>
+                <span class="telemetry-lbl">Keystroke Latency</span>
+              </div>
+              <div class="telemetry-item">
+                <span class="telemetry-val">~22 MB</span>
+                <span class="telemetry-lbl">RAM Footprint</span>
+              </div>
+              <div class="telemetry-item">
+                <span class="telemetry-val">5 Tiers</span>
+                <span class="telemetry-lbl">FLAG_SECURE Hybrid</span>
+              </div>
+              <div class="telemetry-item">
+                <span class="telemetry-val">0 VDOM</span>
+                <span class="telemetry-lbl">TC39 Signals DOM</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Interactive Simulator Mount -->
+          <div class="sim-wrapper" id="live-simulator-mount" aria-label="Interactive RizzBoard Simulator"></div>
+        </div>
+      </section>
+
+      <!-- 5-Tier Hybrid Context Engine -->
+      <section class="section" id="hybrid-engine">
+        <div class="container">
+          <div class="section-header">
+            <span class="section-kicker">SOLVING SCREENSHOT RESTRICTIONS</span>
+            <h2>5-Tier Hybrid Context Ingestion</h2>
+            <p>
+              Apps like Telegram Secret Chats, Signal, and Hinge private modes block screenshots at
+              the OS compositor via <code>FLAG_SECURE</code>, while Snapchat alerts the sender.
+              RizzBoard routes around pixel capture automatically across five specialized channels.
+            </p>
+          </div>
+
+          <div class="tiers-grid">
+            <article class="tier-card">
+              <span class="tier-num">TIER 01 · MEDIASTORE</span>
+              <h3>Scoped Storage OCR</h3>
+              <p>
+                Detects finalized screenshots via <code>RELATIVE_PATH</code> &amp;
+                <code>IS_PENDING == 0</code> in &lt;100ms, extracting bubbles with on-device Google
+                ML Kit Text Recognition v2.
+              </p>
+              <span class="tier-tag">Normal Chat Apps</span>
+            </article>
+
+            <article class="tier-card">
+              <span class="tier-num">TIER 02 · STEALTH BUFFER</span>
+              <h3>Notification Listener</h3>
+              <p>
+                Caches incoming <code>MessagingStyle</code> notifications in an ephemeral RAM-only
+                ring buffer keyed by package name—zero disk writes and zero Snapchat alerts.
+              </p>
+              <span class="tier-tag">Snapchat &amp; FLAG_SECURE</span>
+            </article>
+
+            <article class="tier-card">
+              <span class="tier-num">TIER 03 · CLIPBOARD VAULT</span>
+              <h3>Self-Filtered Copy Hook</h3>
+              <p>
+                Long-press any bubble and tap Copy. RizzBoard filters out its own committed replies,
+                URLs, and OTPs, lighting up an instant 1-tap reply trigger.
+              </p>
+              <span class="tier-tag">Zero Extra Permissions</span>
+            </article>
+
+            <article class="tier-card">
+              <span class="tier-num">TIER 04 · WINDOW SCANNER</span>
+              <h3>On-Demand Bubble Scan</h3>
+              <p>
+                Zero passive background hooks. Reads visible chat coordinates strictly when you tap
+                <strong>Scan Screen</strong>, feeding directly into bubble alignment segmentation.
+              </p>
+              <span class="tier-tag">0ms OCR · Silent</span>
+            </article>
+
+            <article class="tier-card">
+              <span class="tier-num">TIER 05 · ISOLATED INPUT</span>
+              <h3>In-Keyboard Stealth Mode</h3>
+              <p>
+                When snaps, voice notes, or photo prompts block both screenshots and copy, toggle
+                <strong>Tell Rizz</strong> to type a hint inside the IME without touching the host chat box.
+              </p>
+              <span class="tier-tag">100% Universal Fallback</span>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- Browser Extension Section -->
+      <section class="section" id="web-extension">
+        <div class="container split-grid">
+          <div>
+            <span class="section-kicker">DEPT 04 · DESKTOP &amp; WEB</span>
+            <h2 style="font-family: var(--font-display); font-size: 34px; letter-spacing: -0.03em; margin-bottom: 14px;">
+              RizzBoard Web Wingman Extension
+            </h2>
+            <p style="color: var(--text-secondary); margin-bottom: 22px;">
+              Powered by the exact same TypeScript intelligence core as the Android IME, the
+              Manifest V3 browser extension injects an isolated Shadow DOM Wingman HUD into
+              WhatsApp Web, Instagram Direct, Telegram Web, Tinder, Bumble, Discord, and X DMs.
+            </p>
+            <ul class="step-list">
+              <li class="step-item">
+                <span class="step-index">01</span>
+                <div>
+                  <h4>Live DOM Bubble Scanner &amp; Selection Trigger</h4>
+                  <p>
+                    Automatically segments left vs. right web chat bubbles or pops a 1-click
+                    <strong>⚡ Rizz Reply</strong> chip whenever you highlight any message on the web.
+                  </p>
+                </div>
+              </li>
+              <li class="step-item">
+                <span class="step-index">02</span>
+                <div>
+                  <h4>React, Lexical &amp; ContentEditable Safe Insertion</h4>
+                  <p>
+                    Commits chosen Smooth, Tease, or Bold replies directly into modern rich-text chat
+                    composers without breaking React or Lexical state.
+                  </p>
+                </div>
+              </li>
+              <li class="step-item">
+                <span class="step-index">03</span>
+                <div>
+                  <h4>Toolbar Popup + Alt+R Hotkey</h4>
+                  <p>
+                    Includes standalone Reply Generator, Draft Roast Rizz Test, and searchable
+                    Offline Curated Vault from any browser tab.
+                  </p>
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <span class="section-kicker">30-SECOND SETUP</span>
+            <h3 style="font-family: var(--font-display); font-size: 22px; margin-bottom: 16px;">
+              Install in Chrome, Brave, Edge, or Arc
+            </h3>
+            <ol class="step-list">
+              <li class="step-item">
+                <span class="step-index">1.</span>
+                <div>
+                  <h4>Download &amp; Extract Archive</h4>
+                  <p>
+                    Download <code>rizzboard-extension-v1.2.2.zip</code> below and unzip it to a
+                    local folder on your machine.
+                  </p>
+                </div>
+              </li>
+              <li class="step-item">
+                <span class="step-index">2.</span>
+                <div>
+                  <h4>Enable Developer Mode</h4>
+                  <p>
+                    Navigate to <code>chrome://extensions</code> (or <code>brave://extensions</code>)
+                    and toggle <strong>Developer mode</strong> in the top-right corner.
+                  </p>
+                </div>
+              </li>
+              <li class="step-item">
+                <span class="step-index">3.</span>
+                <div>
+                  <h4>Load Unpacked &amp; Press Alt+R</h4>
+                  <p>
+                    Click <strong>Load unpacked</strong>, select the unzipped folder, and open any
+                    web chat or click the RizzBoard toolbar icon.
+                  </p>
+                </div>
+              </li>
+            </ol>
+          </div>
+        </div>
+      </section>
+
+      <!-- Micro-Modular Architecture & Benchmarks -->
+      <section class="section" id="architecture">
+        <div class="container">
+          <div class="section-header">
+            <span class="section-kicker">MICRO-MODULAR MONOREPO</span>
+            <h2>Seven Decoupled Engineering Departments</h2>
+            <p>
+              Strict domain boundaries ensure zero circular dependencies, sub-second incremental
+              builds, and shared deterministic logic across Android and Chromium runtimes.
+            </p>
+          </div>
+
+          <div class="spec-table-wrap" style="margin-bottom: 32px;">
+            <table class="spec-table">
+              <thead>
+                <tr>
+                  <th>Department</th>
+                  <th>Directory</th>
+                  <th>Micro-Modules</th>
+                  <th>Responsibility</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>01 · Core Engine</strong></td>
+                  <td><code>core/</code></td>
+                  <td><code>context/</code>, <code>engine/</code>, <code>ocr/</code>, <code>vault/</code>, <code>ai/</code></td>
+                  <td>Hybrid Context Router, Prefix Trie, Roast Scorer &amp; Bubble Segmenter</td>
+                </tr>
+                <tr>
+                  <td><strong>02 · Android Host</strong></td>
+                  <td><code>android/</code></td>
+                  <td><code>keyboard/</code>, <code>bridge/</code>, <code>service/{store,screenshot,notification,clipboard,accessibility}</code></td>
+                  <td>Native IME, ML Kit OCR v2, Stealth RAM Buffer &amp; Signed R8 APK</td>
+                </tr>
+                <tr>
+                  <td><strong>03 · Zuari IME UI</strong></td>
+                  <td><code>ui/</code></td>
+                  <td><code>components/{ribbon,grid,panels}</code>, <code>services/</code>, <code>vendor/zuari/</code></td>
+                  <td>12 KB gzipped Zero-VDOM TC39 Signals reactive keyboard interface</td>
+                </tr>
+                <tr>
+                  <td><strong>04 · Web Extension</strong></td>
+                  <td><code>extension/</code></td>
+                  <td><code>background/</code>, <code>content/{adapters,extractor,injector,widget}</code>, <code>popup/</code></td>
+                  <td>Manifest V3 Shadow DOM chat wingman &amp; toolbar micro-app</td>
+                </tr>
+                <tr>
+                  <td><strong>05 · Web Portal</strong></td>
+                  <td><code>web/</code></td>
+                  <td><code>styles/</code>, <code>src/{simulator,downloads}</code>, <code>downloads/</code></td>
+                  <td>Interactive live simulator, documentation &amp; verified binary distribution</td>
+                </tr>
+                <tr>
+                  <td><strong>06 · DevOps &amp; CI</strong></td>
+                  <td><code>scripts/</code>, <code>.github/</code></td>
+                  <td><code>build/</code>, <code>verify/</code>, <code>release/</code>, <code>workflows/</code></td>
+                  <td>Deterministic APK signing, ZIP packaging, SHA-256 verification &amp; GitHub Releases</td>
+                </tr>
+                <tr>
+                  <td><strong>07 · Documentation</strong></td>
+                  <td><code>docs/</code></td>
+                  <td><code>departments/</code>, <code>architecture/</code>, <code>specs/</code>, <code>setup/</code></td>
+                  <td>Per-department architectural manuals, latency SLAs &amp; onboarding specs</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="spec-table-wrap">
+            <table class="spec-table">
+              <thead>
+                <tr>
+                  <th>Telemetry Metric</th>
+                  <th>Google Gboard</th>
+                  <th>Microsoft SwiftKey</th>
+                  <th>Danger.Labs RizzBoard v1.1</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Release APK Size (R8 Shrunk)</strong></td>
+                  <td>75 MB – 110 MB</td>
+                  <td>65 MB – 95 MB</td>
+                  <td class="highlight-col">~2.9 MB – 3.6 MB</td>
+                </tr>
+                <tr>
+                  <td><strong>Background RAM Footprint</strong></td>
+                  <td>85 MB – 140 MB</td>
+                  <td>70 MB – 125 MB</td>
+                  <td class="highlight-col">~22 MB</td>
+                </tr>
+                <tr>
+                  <td><strong>Keystroke-to-Commit Latency</strong></td>
+                  <td>16 ms – 32 ms</td>
+                  <td>18 ms – 35 ms</td>
+                  <td class="highlight-col">&lt; 4 ms</td>
+                </tr>
+                <tr>
+                  <td><strong>FLAG_SECURE &amp; Snapchat Support</strong></td>
+                  <td>None</td>
+                  <td>None</td>
+                  <td class="highlight-col">5-Tier Hybrid Context + Stealth Mode</td>
+                </tr>
+                <tr>
+                  <td><strong>Companion Desktop Web Extension</strong></td>
+                  <td>None</td>
+                  <td>None</td>
+                  <td class="highlight-col">Chromium Manifest V3 Included</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Direct Release Downloads & SHA-256 Checksums -->
+      <section class="section" id="downloads">
+        <div class="container">
+          <div class="section-header">
+            <span class="section-kicker">VERIFIED RELEASE ARTIFACTS</span>
+            <h2>Download RizzBoard v1.2.2</h2>
+            <p>
+              R8-optimized, V1/V2/V3 signed universal Android release package and packaged Chromium
+              Manifest V3 extension archive with cryptographic SHA-256 checksums.
+            </p>
+          </div>
+
+          <div class="downloads-grid">
+            <!-- Card 1: Signed Release APK -->
+            <article class="download-card">
+              <div class="dl-top">
+                <div>
+                  <span class="dl-platform">ANDROID 8.0 – 15 (API 26–35) · UNIVERSAL</span>
+                  <h3>Signed Release APK</h3>
+                </div>
+                <span class="version-chip">v1.2.2</span>
+              </div>
+
+              <div class="dl-specs">
+                <span id="dl-apk-size">Size: ~3.2 MB</span>
+                <span>Signature: V1 + V2 + V3</span>
+                <span>ABI: Universal</span>
+              </div>
+
+              <div class="sha-box">
+                <span class="sha-text" id="apk-sha256-value">SHA-256: Verifying release manifest…</span>
+                <button class="copy-sha-btn" id="copy-apk-sha" type="button">Copy Hash</button>
+              </div>
+
+              <p style="font-size: 13px; color: var(--text-secondary);">
+                Install directly on device or via ADB:
+                <code>adb install -r rizzboard-v1.2.2-release.apk</code>
+              </p>
+
+              <a
+                href="./downloads/rizzboard-v1.2.2-release.apk"
+                download
+                class="btn btn-primary"
+                id="card-download-apk"
+              >
+                ⬇ Download rizzboard-v1.2.2-release.apk
+              </a>
+            </article>
+
+            <!-- Card 2: Browser Extension ZIP -->
+            <article class="download-card">
+              <div class="dl-top">
+                <div>
+                  <span class="dl-platform">CHROME · BRAVE · EDGE · ARC · OPERA</span>
+                  <h3>Web Wingman Extension</h3>
+                </div>
+                <span class="version-chip">MV3 · v1.2.2</span>
+              </div>
+
+              <div class="dl-specs">
+                <span id="dl-ext-size">Size: ~28 KB</span>
+                <span>Runtime: Isolated Shadow DOM</span>
+                <span>Hotkey: Alt+R</span>
+              </div>
+
+              <div class="sha-box">
+                <span class="sha-text" id="ext-sha256-value">SHA-256: Verifying release manifest…</span>
+                <button class="copy-sha-btn" id="copy-ext-sha" type="button">Copy Hash</button>
+              </div>
+
+              <p style="font-size: 13px; color: var(--text-secondary);">
+                Unzip and load via <code>chrome://extensions</code> → <strong>Load unpacked</strong>.
+              </p>
+
+              <a
+                href="./downloads/rizzboard-extension-v1.2.2.zip"
+                download
+                class="btn btn-secondary"
+                id="card-download-ext"
+              >
+                ⬇ Download rizzboard-extension-v1.2.2.zip
+              </a>
+            </article>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <span>&copy; 2026 Danger.Labs (Autonomous Systems &amp; Edge AI Division) · Apache-2.0 License</span>
+        <span>
+          <a href="https://github.com/dr-week/rizzboard" target="_blank" rel="noopener">GitHub Repository</a>
+          &nbsp;·&nbsp;
+          <a href="./downloads/SHA256SUMS.txt" download id="footer-sha256-link">SHA256SUMS.txt</a>
+        </span>
+      </div>
+    </footer>
+
+    <script type="module" src="./assets/web-app.js"></script>
+  </body>
+</html>

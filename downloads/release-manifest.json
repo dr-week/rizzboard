@@ -1,0 +1,16 @@
+{
+  "version": "1.2.2",
+  "builtAt": "2026-11-28T10:50:27.022Z",
+  "apk": {
+    "fileName": "rizzboard-v1.2.2-release.apk",
+    "url": "./downloads/rizzboard-v1.2.2-release.apk",
+    "sizeFormatted": "1.46 MB",
+    "sha256": "0e94017fa29a7315cce2d6543716707e89f648692355244fe9eea7922ce6ccf7"
+  },
+  "extension": {
+    "fileName": "rizzboard-extension-v1.2.2.zip",
+    "url": "./downloads/rizzboard-extension-v1.2.2.zip",
+    "sizeFormatted": "19.5 KB",
+    "sha256": "1f4241b6be80139de843a38f41d536925c4ee49acf6982bc116b850151933d4d"
+  }
+}
