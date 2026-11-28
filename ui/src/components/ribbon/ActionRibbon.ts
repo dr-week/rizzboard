@@ -33,43 +33,43 @@ export function ActionRibbon(options: {
           `)
         : ''}
       <button class="action-pill" @click=${options.onVoiceInput} title="Google Voice Typing">
-        ${Icons.mic()}
+        ${mountTemplate(Icons.mic())}
       </button>
       <button class="action-pill" @click=${options.onScanScreen} title="Scan Screen">
-        ${Icons.scan()}
+        ${mountTemplate(Icons.scan())}
       </button>
       <button
         class=${() => options.stealthMode.value ? 'action-pill active-mode' : 'action-pill'}
         @click=${options.onToggleStealth}
         title="Tell Rizz">
-        ${Icons.chat()}
+        ${mountTemplate(Icons.chat())}
       </button>
       <button class="action-pill" @click=${options.onToggleRoast} title="Roast Draft">
-        ${Icons.flame()}
+        ${mountTemplate(Icons.flame())}
       </button>
       <button class="action-pill" @click=${options.onToggleClipboard} title="Clipboard">
-        ${Icons.clipboard()}
+        ${mountTemplate(Icons.clipboard())}
       </button>
       <button class="action-pill" @click=${options.onToggleEmojis} title="Emojis">
-        ${Icons.emoji()}
+        ${mountTemplate(Icons.emoji())}
       </button>
       <button class="action-pill" @click=${options.onToggleTextEdit} title="Text Editing">
-        ${Icons.edit()}
+        ${mountTemplate(Icons.edit())}
       </button>
       <button class="action-pill" @click=${options.onToggleHelp} title="Help & Gestures">
-        ${Icons.help()}
+        ${mountTemplate(Icons.help())}
       </button>
       <button class="action-pill" @click=${options.onCycleTheme} title="Switch Theme">
-        ${Icons.theme()}
+        ${mountTemplate(Icons.theme())}
       </button>
       <button class="action-pill" @click=${options.onToggleOneHanded} title="One-Handed Mode">
-        ${Icons.oneHanded()}
+        ${mountTemplate(Icons.oneHanded())}
       </button>
       <button class="action-pill" @click=${options.onToggleNumberRow} title="Number Row">
-        ${Icons.numbers()}
+        ${mountTemplate(Icons.numbers())}
       </button>
       <button class="action-pill" @click=${options.onSwitchKeyboard} title="Switch Keyboard">
-        ${Icons.globe()}
+        ${mountTemplate(Icons.globe())}
       </button>
     </div>
   `);
