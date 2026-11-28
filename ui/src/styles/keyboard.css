@@ -99,3 +99,13 @@
   width: 82%;
   margin-left: auto;
 }
+
+.rizz-app[data-height="compact"] .key-btn {
+  height: 36px;
+  font-size: 14px;
+}
+
+.rizz-app[data-height="tall"] .key-btn {
+  height: 48px;
+  font-size: 16px;
+}
