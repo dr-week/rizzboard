@@ -40,78 +40,30 @@ import { SettingsPanel } from './components/panels/SettingsPanel.ts';
 
 import './styles/keyboard.css';
 
-const predictive = new PredictiveEngine();
+import {
+  predictive,
+  currentView,
+  typedBuffer,
+  activeTheme,
+  oneHandedMode,
+  showNumberRow,
+  keyboardHeight,
+  activeHostPackage,
+  pendingContext,
+  activeResolution,
+  stealthMode,
+  stealthBuffer,
+  stealthHint,
+  showEnableScannerLink,
+  currentRoast,
+  clipboardHistory,
+  activeSuggestions,
+  type KeyboardView
+} from './state/keyboard-state.ts';
+
+export type { KeyboardView };
+
 const contextRouter = new HybridContextRouter();
-
-// Reactive UI State
-export type KeyboardView = 'qwerty' | 'emojis' | 'clipboard' | 'roast' | 'nextmove' | 'textedit' | 'help' | 'talks' | 'settings';
-const currentView = signal<KeyboardView>('qwerty');
-const typedBuffer = signal<string>('');
-const activeTheme = signal<'slate' | 'amoled' | 'light'>(
-  ((() => {
-    try {
-      const saved = localStorage.getItem('rizzboard_theme');
-      if (saved === 'amoled' || saved === 'light' || saved === 'slate') return saved;
-    } catch {}
-    return 'slate';
-  })())
-);
-const oneHandedMode = signal<'off' | 'right' | 'left'>(
-  ((() => {
-    try {
-      const saved = localStorage.getItem('rizzboard_one_handed');
-      if (saved === 'right' || saved === 'left' || saved === 'off') return saved;
-    } catch {}
-    return 'off';
-  })())
-);
-const showNumberRow = signal<boolean>(
-  ((() => {
-    try {
-      return localStorage.getItem('rizzboard_number_row') === 'true';
-    } catch {}
-    return false;
-  })())
-);
-const keyboardHeight = signal<'normal' | 'compact' | 'tall'>(
-  ((() => {
-    try {
-      const saved = localStorage.getItem('rizzboard_height');
-      if (saved === 'compact' || saved === 'tall' || saved === 'normal') return saved;
-    } catch {}
-    return 'normal';
-  })())
-);
-
-// Hybrid Context & Stealth Input State
-const activeHostPackage = signal<string | undefined>(undefined);
-const pendingContext = signal<ConversationContext | null>(null);
-const activeResolution = signal<ContextResolution | null>(null);
-const stealthMode = signal<boolean>(false);
-const stealthBuffer = signal<string>('');
-const stealthHint = signal<string | null>(null);
-const showEnableScannerLink = signal<boolean>(false);
-
-const currentRoast = signal<DraftAnalysis | null>(null);
-const clipboardHistory = signal<string[]>([
-  'What is your biggest red flag?',
-  'Are we still on for coffee this weekend?'
-]);
-
-// Reactive Next-Word & Prefix Predictions (tracks active target buffer)
-const activeSuggestions = computed(() => {
-  const buf = stealthMode.value ? stealthBuffer.value : typedBuffer.value;
-  if (!buf) return stealthMode.value ? ['asked', 'red', 'weekend'] : ['how', 'are', 'you'];
-  const words = buf.trim().split(/\s+/);
-  const lastWord = words[words.length - 1];
-
-  if (buf.endsWith(' ')) {
-    return predictive.predictNextWord(lastWord, 3);
-  } else {
-    const completions = predictive.completePrefix(lastWord, 3);
-    return completions.length > 0 ? completions : [lastWord];
-  }
-});
 
 // --- Native Hybrid Bridge Listeners ---
 
