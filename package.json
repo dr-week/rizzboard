@@ -16,6 +16,7 @@
     "serve:web": "node scripts/serve-web.mjs",
     "release:dry-run": "node scripts/release/cut-release.mjs --dry-run",
     "release:github": "node scripts/release/cut-release.mjs",
-    "ship": "node scripts/release/ship.mjs"
+    "ship": "node scripts/release/ship.mjs",
+    "docs:index": "node scripts/docs/index-docs.mjs"
   }
 }
