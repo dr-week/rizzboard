@@ -165,6 +165,7 @@ Return ONLY a JSON array of 3 objects: [{"vibe":"Smooth","line":"..."},{"vibe":"
   `)}const Tt={q:"1",w:"2",e:"3",r:"4",t:"5",y:"6",u:"7",i:"8",o:"9",p:"0",a:"@",s:"#",d:"$",f:"%",g:"&",h:"-",j:"+",k:"(",l:")",z:"*",x:'"',c:"'",v:":",b:";",n:"!",m:"?"};function Pt(t){const e=w("off"),n=w("alpha"),o=ALPHA_ROW_1,r=ALPHA_ROW_2,a=ALPHA_ROW_3,i=NUM_ROW_1,c=NUM_ROW_2,d=NUM_ROW_3,g=SYM_ROW_1,v=SYM_ROW_2,u=SYM_ROW_3,m=k=>{const z=e.value!=="off"?k.toUpperCase():k;t.onKeyPress(z),e.value==="once"&&(e.value="off")},l=()=>{e.value==="off"?e.value="once":e.value==="once"?e.value="caps":e.value="off"},f=(k,E)=>{const z=E?k.toUpperCase():k,O=Tt[k]??"";let b=null,P=!1;const me=()=>{P=!1,O&&(b=setTimeout(()=>{P=!0,t.onKeyPress(O)},380))},te=()=>{b&&(clearTimeout(b),b=null)};return h`
       <button
         class="key-btn"
+        data-key=${z}
         @pointerdown=${me}
         @pointerup=${te}
         @pointerleave=${te}

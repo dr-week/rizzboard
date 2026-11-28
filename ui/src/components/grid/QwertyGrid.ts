@@ -93,6 +93,7 @@ export function QwertyGrid(options: {
     return html`
       <button
         class="key-btn"
+        data-key=${label}
         @pointerdown=${onPointerDown}
         @pointerup=${onPointerCancel}
         @pointerleave=${onPointerCancel}

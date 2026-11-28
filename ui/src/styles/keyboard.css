@@ -109,3 +109,24 @@
   height: 48px;
   font-size: 16px;
 }
+
+.key-btn[data-key] {
+  position: relative;
+}
+
+.key-btn[data-key]:active::after {
+  content: attr(data-key);
+  position: absolute;
+  bottom: 105%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #334155;
+  color: #ffffff;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+  z-index: 50;
+}
