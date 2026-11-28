@@ -162,6 +162,16 @@ export class PredictiveEngine {
   }
 
   public expandSnippet(word: string): string | null {
+    const key = word.trim().toLowerCase();
+    try {
+      if (typeof localStorage !== 'undefined') {
+        const raw = localStorage.getItem('rizzboard_custom_snippets');
+        if (raw) {
+          const custom = JSON.parse(raw) as Record<string, string>;
+          if (custom[key]) return custom[key];
+        }
+      }
+    } catch {}
     const snippets: Record<string, string> = {
       omw: 'On my way!',
       brb: 'Be right back',
@@ -170,7 +180,7 @@ export class PredictiveEngine {
       idk: "I don't know",
       tbh: 'To be honest'
     };
-    return snippets[word.trim().toLowerCase()] ?? null;
+    return snippets[key] ?? null;
   }
 
   /**
