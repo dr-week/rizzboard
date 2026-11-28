@@ -7,6 +7,7 @@ function run(cmd) {
 
 const msg = process.argv.slice(2).join(' ').trim() || 'chore(ship): verify, build & deploy latest release';
 
+run('node scripts/docs/index-docs.mjs');
 run('node scripts/verify/verify-all.mjs');
 
 const status = execSync('git status --porcelain').toString().trim();
