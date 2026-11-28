@@ -24,6 +24,7 @@ import com.rizzboard.bridge.RizzNativeBridge
 import com.rizzboard.service.accessibility.RizzAccessibilityService
 import com.rizzboard.service.clipboard.ClipboardVault
 import com.rizzboard.service.notification.RizzNotificationListener
+import com.rizzboard.service.ota.OtaUiUpdater
 import com.rizzboard.service.screenshot.ScreenshotObserver
 import com.rizzboard.service.store.ContextMemoryStore
 import com.rizzboard.settings.SettingsActivity
@@ -60,8 +61,9 @@ class RizzInputMethodService : InputMethodService() {
         // Attach native bridge
         wv.addJavascriptInterface(RizzNativeBridge(this), "Android")
 
-        // Load optimized local Zuari build
-        wv.loadUrl("file:///android_asset/ui/index.html")
+        // Load OTA-cached UI if available, otherwise bundled local Zuari build
+        wv.loadUrl(OtaUiUpdater.getUiEntryUrl(this))
+        OtaUiUpdater.checkForUpdatesAsync(this)
 
         setupHybridObservers()
         return wv
