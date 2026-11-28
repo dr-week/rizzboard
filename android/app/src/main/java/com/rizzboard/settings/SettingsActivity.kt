@@ -130,6 +130,37 @@ class SettingsActivity : AppCompatActivity() {
             )
         )
 
+        // Card 5: In-App Updates (OTA UI + Latest APK)
+        val updateBadge = createBadge().apply {
+            text = "OTA READY"
+            setTextColor(android.graphics.Color.parseColor("#38BDF8"))
+        }
+        container.addView(
+            createFeatureCard(
+                heading = "5. In-App Updates (OTA + APK)",
+                description = "Pull the latest keyboard UI, autocorrect & AI updates over-the-air, or download the newest signed APK.",
+                badge = updateBadge,
+                primaryButtonText = "Check OTA UI Update",
+                onPrimaryClick = {
+                    com.rizzboard.service.ota.OtaUiUpdater.checkForUpdatesAsync(this)
+                    android.widget.Toast.makeText(
+                        this,
+                        "Checking for OTA UI updates...",
+                        android.widget.Toast.LENGTH_SHORT
+                    ).show()
+                },
+                secondaryButtonText = "Download Latest APK",
+                onSecondaryClick = {
+                    startActivity(
+                        Intent(
+                            Intent.ACTION_VIEW,
+                            android.net.Uri.parse("https://dr-week.github.io/rizzboard/")
+                        )
+                    )
+                }
+            )
+        )
+
         scroll.addView(container)
         setContentView(scroll)
     }
