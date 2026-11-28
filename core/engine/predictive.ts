@@ -80,7 +80,22 @@ const COMMON_AUTOCORRECTS: Record<string, string> = {
   msg: 'message',
   bday: 'birthday',
   wknd: 'weekend',
-  tmrw: 'tomorrow'
+  tmrw: 'tomorrow',
+  alot: 'a lot',
+  wierd: 'weird',
+  beleive: 'believe',
+  acheive: 'achieve',
+  adress: 'address',
+  busines: 'business',
+  comming: 'coming',
+  happend: 'happened',
+  neccessary: 'necessary',
+  posible: 'possible',
+  recomend: 'recommend',
+  succesful: 'successful',
+  suprise: 'surprise',
+  thier: 'their',
+  truely: 'truly'
 };
 
 export class PredictiveEngine {
