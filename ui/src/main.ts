@@ -284,6 +284,14 @@ function handleKey(char: string) {
     return;
   }
 
+  // Double-spacebar -> ". " (Gboard / iOS standard)
+  if (char === ' ' && /[a-zA-Z0-9]$/.test(typedBuffer.value.slice(0, -1)) && typedBuffer.value.endsWith(' ')) {
+    deleteCharacter();
+    typedBuffer.value = typedBuffer.value.slice(0, -1) + '. ';
+    commitToChat('. ');
+    return;
+  }
+
   // Autocorrect & personal dictionary learning on word boundary
   if (char === ' ' || char === '.' || char === ',' || char === '!' || char === '?') {
     const match = typedBuffer.value.match(/([a-zA-Z']+)$/);
