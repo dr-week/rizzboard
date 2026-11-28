@@ -13,6 +13,7 @@ const LONG_PRESS_MAP: Record<string, string> = {
 
 export function QwertyGrid(options: {
   stealthMode: { value: boolean };
+  showNumberRow?: { value: boolean };
   onKeyPress: (char: string) => void;
   onBackspace: () => void;
   onSend: () => void;
@@ -238,6 +239,12 @@ export function QwertyGrid(options: {
 
     return mountTemplate(html`
       <div class="keyboard-grid">
+        ${() => options.showNumberRow?.value
+          ? mountList(
+              'keyboard-row',
+              numRow1.map(n => html`<button class="key-btn" @click=${() => options.onKeyPress(n)}>${n}</button>`)
+            )
+          : ''}
         ${mountList(
           'keyboard-row',
           alphaRow1.map(k => createAlphaKeyBtn(k, isUpper))

@@ -20,6 +20,7 @@ export function ActionRibbon(options: {
   onToggleHelp: () => void;
   onCycleTheme: () => void;
   onToggleOneHanded: () => void;
+  onToggleNumberRow: () => void;
 }) {
   return mountTemplate(html`
     <div class="action-bar">
@@ -61,6 +62,9 @@ export function ActionRibbon(options: {
       </button>
       <button class="action-pill" @click=${options.onToggleOneHanded} title="One-Handed Mode">
         🤚
+      </button>
+      <button class="action-pill" @click=${options.onToggleNumberRow} title="Number Row">
+        🔢
       </button>
       <button class="action-pill" @click=${options.onSwitchKeyboard} title="Switch Keyboard">
         🌐

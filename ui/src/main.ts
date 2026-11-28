@@ -62,6 +62,14 @@ const oneHandedMode = signal<'off' | 'right' | 'left'>(
     return 'off';
   })())
 );
+const showNumberRow = signal<boolean>(
+  ((() => {
+    try {
+      return localStorage.getItem('rizzboard_number_row') === 'true';
+    } catch {}
+    return false;
+  })())
+);
 
 // Hybrid Context & Stealth Input State
 const activeHostPackage = signal<string | undefined>(undefined);
@@ -427,6 +435,12 @@ export function App() {
           const next = oneHandedMode.value === 'off' ? 'right' : oneHandedMode.value === 'right' ? 'left' : 'off';
           oneHandedMode.value = next;
           try { localStorage.setItem('rizzboard_one_handed', next); } catch {}
+        },
+        onToggleNumberRow: () => {
+          triggerHaptic('click');
+          const next = !showNumberRow.value;
+          showNumberRow.value = next;
+          try { localStorage.setItem('rizzboard_number_row', String(next)); } catch {}
         }
       })}
 
@@ -513,6 +527,7 @@ export function App() {
         }
         return QwertyGrid({
           stealthMode,
+          showNumberRow,
           onKeyPress: handleKey,
           onBackspace: handleBackspace,
           onSend: () => {
