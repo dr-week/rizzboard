@@ -297,7 +297,8 @@ function handleKey(char: string) {
     const match = typedBuffer.value.match(/([a-zA-Z']+)$/);
     if (match) {
       const lastWord = match[1];
-      const corrected = predictive.autocorrect(lastWord);
+      const expanded = predictive.expandSnippet(lastWord);
+      const corrected = expanded ?? predictive.autocorrect(lastWord);
       if (corrected && corrected !== lastWord) {
         for (let i = 0; i < lastWord.length; i++) {
           deleteCharacter();

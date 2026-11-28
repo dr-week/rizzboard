@@ -122,6 +122,18 @@ export class PredictiveEngine {
     return this.dictionaryWords.has(word.toLowerCase());
   }
 
+  public expandSnippet(word: string): string | null {
+    const snippets: Record<string, string> = {
+      omw: 'On my way!',
+      brb: 'Be right back',
+      gm: 'Good morning!',
+      gn: 'Good night!',
+      idk: "I don't know",
+      tbh: 'To be honest'
+    };
+    return snippets[word.trim().toLowerCase()] ?? null;
+  }
+
   /**
    * Returns an autocorrected replacement if the word is a known typo/contraction
    * or within Levenshtein edit distance 1 of a high-frequency dictionary word.
