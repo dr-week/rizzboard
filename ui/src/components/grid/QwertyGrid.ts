@@ -258,7 +258,7 @@ export function QwertyGrid(options: {
           <button class="key-btn special" @click=${() => activeLayer.value = 'numbers'}>123</button>
           <button class="key-btn special" @click=${options.onOpenEmojis}>😏</button>
           <button class="key-btn special" @click=${() => options.onKeyPress(',')}>,</button>
-          ${mountTemplate(createSpaceBtn())}
+          ${createSpaceBtn()}
           <button class="key-btn special" @click=${() => options.onKeyPress('.')}>.</button>
           <button class="key-btn send" @click=${options.onSend}>
             ${() => options.stealthMode.value ? 'Ask ⚡' : 'Send'}
@@ -306,7 +306,7 @@ export function QwertyGrid(options: {
           <button class="key-btn special" @click=${() => activeLayer.value = 'alpha'}>ABC</button>
           <button class="key-btn special" @click=${options.onOpenEmojis}>😏</button>
           <button class="key-btn special" @click=${() => options.onKeyPress(',')}>,</button>
-          ${mountTemplate(createSpaceBtn())}
+          ${createSpaceBtn()}
           <button class="key-btn special" @click=${() => options.onKeyPress('.')}>.</button>
           <button class="key-btn send" @click=${options.onSend}>
             ${() => options.stealthMode.value ? 'Ask ⚡' : 'Send'}
