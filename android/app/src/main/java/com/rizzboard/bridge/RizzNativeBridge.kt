@@ -184,4 +184,9 @@ class RizzNativeBridge(private val service: RizzInputMethodService) {
             ic.sendKeyEvent(KeyEvent(KeyEvent.ACTION_UP, code))
         }
     }
+
+    @JavascriptInterface
+    fun startInAppDictation() {
+        service.startInAppDictation()
+    }
 }

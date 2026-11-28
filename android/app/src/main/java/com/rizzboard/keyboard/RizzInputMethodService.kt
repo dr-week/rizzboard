@@ -285,6 +285,54 @@ class RizzInputMethodService : InputMethodService() {
         }
     }
 
+    fun startInAppDictation() {
+        val hasAudio = ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.RECORD_AUDIO
+        ) == PackageManager.PERMISSION_GRANTED
+
+        if (!hasAudio || !android.speech.SpeechRecognizer.isRecognitionAvailable(this)) {
+            switchToVoiceInput()
+            return
+        }
+
+        mainHandler.post {
+            try {
+                val recognizer = android.speech.SpeechRecognizer.createSpeechRecognizer(this)
+                val intent = Intent(android.speech.RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+                    putExtra(
+                        android.speech.RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                        android.speech.RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
+                    )
+                    putExtra(android.speech.RecognizerIntent.EXTRA_PARTIAL_RESULTS, false)
+                }
+                recognizer.setRecognitionListener(object : android.speech.RecognitionListener {
+                    override fun onReadyForSpeech(params: android.os.Bundle?) {}
+                    override fun onBeginningOfSpeech() {}
+                    override fun onRmsChanged(rmsdB: Float) {}
+                    override fun onBufferReceived(buffer: ByteArray?) {}
+                    override fun onEndOfSpeech() {}
+                    override fun onError(error: Int) {
+                        recognizer.destroy()
+                    }
+                    override fun onResults(results: android.os.Bundle?) {
+                        val matches = results?.getStringArrayList(android.speech.SpeechRecognizer.RESULTS_RECOGNITION)
+                        val text = matches?.firstOrNull()?.trim()
+                        if (!text.isNullOrEmpty()) {
+                            currentInputConnection?.commitText("$text ", 1)
+                        }
+                        recognizer.destroy()
+                    }
+                    override fun onPartialResults(partialResults: android.os.Bundle?) {}
+                    override fun onEvent(eventType: Int, params: android.os.Bundle?) {}
+                })
+                recognizer.startListening(intent)
+            } catch (_: Exception) {
+                switchToVoiceInput()
+            }
+        }
+    }
+
     override fun onDestroy() {
         ContextMemoryStore.listener = null
         screenshotObserver?.let { contentResolver.unregisterContentObserver(it) }
