@@ -55,26 +55,11 @@ export function ActionRibbon(options: {
       <button class="action-pill" @click=${options.onToggleEmojis} title="Emojis">
         ${mountTemplate(Icons.emoji())}
       </button>
-      <button class="action-pill" @click=${options.onToggleTextEdit} title="Text Editing">
-        ${mountTemplate(Icons.edit())}
-      </button>
-      <button class="action-pill" @click=${options.onToggleHelp} title="Help & Gestures">
-        ${mountTemplate(Icons.help())}
-      </button>
-      <button class="action-pill" @click=${options.onCycleTheme} title="Switch Theme">
-        ${mountTemplate(Icons.theme())}
-      </button>
-      <button class="action-pill" @click=${options.onToggleOneHanded} title="One-Handed Mode">
-        ${mountTemplate(Icons.oneHanded())}
-      </button>
-      <button class="action-pill" @click=${options.onToggleNumberRow} title="Number Row">
-        ${mountTemplate(Icons.numbers())}
-      </button>
       <button class="action-pill" @click=${options.onToggleTalks} title="Rizz Talks">
         ${mountTemplate(Icons.talks())}
       </button>
-      <button class="action-pill" @click=${options.onCycleHeight} title="Keyboard Height">
-        ${mountTemplate(Icons.height())}
+      <button class="action-pill" @click=${options.onToggleHelp} title="Quick Settings">
+        ${mountTemplate(Icons.help())}
       </button>
       <button class="action-pill" @click=${options.onSwitchKeyboard} title="Switch Keyboard">
         ${mountTemplate(Icons.globe())}

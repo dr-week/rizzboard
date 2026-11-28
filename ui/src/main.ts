@@ -408,7 +408,7 @@ export function App() {
         onToggleTextEdit: () =>
           (currentView.value = currentView.value === 'textedit' ? 'qwerty' : 'textedit'),
         onToggleHelp: () =>
-          (currentView.value = currentView.value === 'help' ? 'qwerty' : 'help'),
+          (currentView.value = currentView.value === 'settings' ? 'qwerty' : 'settings'),
         onCycleTheme: () => {
           triggerHaptic('click');
           const next = activeTheme.value === 'slate' ? 'amoled' : activeTheme.value === 'amoled' ? 'light' : 'slate';
