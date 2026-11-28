@@ -446,6 +446,14 @@ export function App() {
               triggerHaptic('heavy');
               analyzeClipboardBubble(clip);
             },
+            onDeleteClip: clip => {
+              triggerHaptic('light');
+              clipboardHistory.value = clipboardHistory.value.filter(c => c !== clip);
+            },
+            onClearAll: () => {
+              triggerHaptic('click');
+              clipboardHistory.value = [];
+            },
             onClose: () => (currentView.value = 'qwerty')
           });
         }
