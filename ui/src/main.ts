@@ -44,6 +44,15 @@ const contextRouter = new HybridContextRouter();
 export type KeyboardView = 'qwerty' | 'emojis' | 'clipboard' | 'roast' | 'nextmove' | 'textedit' | 'help';
 const currentView = signal<KeyboardView>('qwerty');
 const typedBuffer = signal<string>('');
+const activeTheme = signal<'slate' | 'amoled' | 'light'>(
+  ((() => {
+    try {
+      const saved = localStorage.getItem('rizzboard_theme');
+      if (saved === 'amoled' || saved === 'light' || saved === 'slate') return saved;
+    } catch {}
+    return 'slate';
+  })())
+);
 
 // Hybrid Context & Stealth Input State
 const activeHostPackage = signal<string | undefined>(undefined);
@@ -366,7 +375,7 @@ function acceptRoastFix(improved: string) {
 
 export function App() {
   return html`
-    <div class="rizz-app">
+    <div class="rizz-app" data-theme=${() => activeTheme.value}>
       ${ActionRibbon({
         activeContext: pendingContext,
         stealthMode,
@@ -397,7 +406,13 @@ export function App() {
         onToggleTextEdit: () =>
           (currentView.value = currentView.value === 'textedit' ? 'qwerty' : 'textedit'),
         onToggleHelp: () =>
-          (currentView.value = currentView.value === 'help' ? 'qwerty' : 'help')
+          (currentView.value = currentView.value === 'help' ? 'qwerty' : 'help'),
+        onCycleTheme: () => {
+          triggerHaptic('click');
+          const next = activeTheme.value === 'slate' ? 'amoled' : activeTheme.value === 'amoled' ? 'light' : 'slate';
+          activeTheme.value = next;
+          try { localStorage.setItem('rizzboard_theme', next); } catch {}
+        }
       })}
 
       ${() =>

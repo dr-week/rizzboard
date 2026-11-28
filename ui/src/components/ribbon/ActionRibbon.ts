@@ -18,6 +18,7 @@ export function ActionRibbon(options: {
   onSwitchKeyboard: () => void;
   onToggleTextEdit: () => void;
   onToggleHelp: () => void;
+  onCycleTheme: () => void;
 }) {
   return mountTemplate(html`
     <div class="action-bar">
@@ -53,6 +54,9 @@ export function ActionRibbon(options: {
       </button>
       <button class="action-pill" @click=${options.onToggleHelp} title="Help & Gestures">
         ❓
+      </button>
+      <button class="action-pill" @click=${options.onCycleTheme} title="Switch Theme">
+        🎨
       </button>
       <button class="action-pill" @click=${options.onSwitchKeyboard} title="Switch Keyboard">
         🌐
