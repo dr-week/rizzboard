@@ -56,12 +56,17 @@ export class RizzEngine {
     const isGreeting = /^(hey|hi|hello|yo|sup|heyy+|hii+|gm|good morning)\b/i.test(lower);
     const isSorry = /\b(sorry|my bad|apologize|late|missed)\b/i.test(lower);
     const isCompliment = /\b(cute|hot|pretty|handsome|smart|funny|sweet|love your|like your)\b/i.test(lower);
+    const isKonkani = /\b(koso|kashi|kitem|khuim|mhaka|borem|barem|vhoi|naka|zala|mog)\b/i.test(lower);
 
     let defaultSmooth: string;
     let defaultTease: string;
     let defaultBold: string;
 
-    if (isGreeting) {
+    if (isKonkani) {
+      defaultSmooth = 'Borem asa! Tum koso asa?';
+      defaultTease = 'Arey, itlem busy asa ki mhaka visarlo?';
+      defaultBold = 'Choll, coffee-k vetam—kedna free asa?';
+    } else if (isGreeting) {
       defaultSmooth = 'Was literally just thinking about texting you—great timing.';
       defaultTease = 'Look who finally decided to grace my notifications.';
       defaultBold = 'Hey—skipping the small talk, how is your week looking?';
